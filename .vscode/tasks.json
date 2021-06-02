@@ -1,0 +1,39 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+      {
+          "label": "build",
+          "type": "shell",
+          "command": "${workspaceFolder}/gradlew build -b ./app/build.gradle.kts -x test",
+          "problemMatcher": [],
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          }
+      },
+      {
+          "label": "run",
+          "type": "shell",
+          "command": "${workspaceFolder}/gradlew -b ./app/build.gradle.kts run",
+          "problemMatcher": []
+      },
+      {
+          "label": "test",
+          "type": "shell",
+          "command": "${workspaceFolder}/gradlew -b ./app/build.gradle.kts test",
+          "problemMatcher": []
+      },
+      {
+          "label": "clean",
+          "type": "shell",
+          "command": "${workspaceFolder}/gradlew -b ./app/build.gradle.kts clean",
+          "problemMatcher": []
+      },
+      {
+          "label": "check",
+          "type": "shell",
+          "command": "${workspaceFolder}/gradlew -b ./app/build.gradle.kts check",
+          "problemMatcher": []
+      }
+  ]
+}
