@@ -14,7 +14,8 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 // Storage for testing
-val globalStorageMap = HashMap<String, MutableList<Any>>()
+val globalStorageMap = HashMap<String, HashMap<Int, Any>>()
+var globalCounter = 1;
 
 fun Route.endpoints() {
     val reflections =
@@ -23,11 +24,11 @@ fun Route.endpoints() {
                 .addUrls(ClasspathHelper.forPackage("kt.json.server"))
                 .setScanners(TypeAnnotationsScanner(), SubTypesScanner(false))
         )
-    reflections.getSubTypesOf(BaseModel::class.java).forEach { it ->
+    reflections.getSubTypesOf(IBase::class.java).forEach { it ->
         val route = it.name.split('.').last()
         val className = it.name
         // iniialize storage for testing
-        globalStorageMap.put(it.name, mutableListOf<Any>())
+        globalStorageMap[it.name] = hashMapOf<Int, Any>()
 
         // get plural
         get("/$route") {
@@ -35,7 +36,7 @@ fun Route.endpoints() {
         }
         // get singular
         get("/$route/{id}") {
-            handleGetById(this, className)
+            handleGetById(this, className, call.parameters["id"]!!.toInt())
             call.respondText("Hello from $route $className get single\n", ContentType.Text.Plain, HttpStatusCode.OK)
         }
         // create singular
@@ -52,17 +53,14 @@ fun Route.endpoints() {
         }
         // update singular
         put("/$route/{id}") {
-            handlePut(this, className)
+            handlePut(this, className, call.parameters["id"]!!.toInt())
             call.respondText(
                 "Hello from $route $className put single\n", ContentType.Text.Plain, HttpStatusCode.OK
             )
         }
         // delete singular
         delete("/$route/{id}") {
-            handleDelete(this, className)
-            call.respondText(
-                "Hello from $route $className delete single\n", ContentType.Text.Plain, HttpStatusCode.OK
-            )
+            handleDelete(this, className, call.parameters["id"]!!.toInt())
         }
     }
 }

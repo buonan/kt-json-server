@@ -48,12 +48,13 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.10")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
     implementation("org.reflections:reflections:0.9.12")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
+
     // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     // This dependency is used by the application.
     implementation("com.google.guava:guava:30.0-jre")
+    implementation("com.google.code.gson:gson:2.8.5")
 
     // These are 3rd party dependencies
     implementation("org.litote.kmongo:kmongo:4.2.7")

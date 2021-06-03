@@ -1,9 +1,18 @@
 package kt.json.server
 
 import kotlinx.serialization.Serializable
+import kotlin.reflect.full.memberProperties
 
 @Serializable
 data class Profile (
-  val name: String? = null,
-  val email: String? = null
-) : BaseModel()
+  override var id: Int? = null,
+  var name: String? = null,
+  var email: String? = null,
+) : IBase {
+  override fun toString(): String {
+    var s = ""
+    Profile::class.memberProperties.forEach { member -> s += """ "${member.name}": "${member.get(this)}",""" }
+    s = s.substring(0, s.length - 1);
+    return "{$s}"
+  }
+}

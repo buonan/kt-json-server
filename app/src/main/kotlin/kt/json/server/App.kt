@@ -37,18 +37,11 @@ fun printRoutes() {
                 .setScanners(TypeAnnotationsScanner(), SubTypesScanner(false))
         )
 
-    // reflections.allTypes.forEach { println(it) }
-    reflections.getSubTypesOf(BaseModel::class.java).forEach { it ->
+    reflections.getSubTypesOf(IBase::class.java).forEach { it ->
         // print routes
         println("Routes http://localhost:8000/${it.name.split('.').last()}")
     }
 }
-
-//fun main(args: Array<String>?) {
-//    println(App().greeting)
-//    val app: App = App()
-//    app.start()
-//}
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.main(testing: Boolean = false) {

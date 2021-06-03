@@ -12,7 +12,7 @@ POST http://127.0.0.1:8000/Comment
 Content-Type: application/json
 
 {
-  "postId": "200",
+  "postId": 1,
   "body": "My Comment",
   "author": "Smith"
 }
@@ -32,17 +32,17 @@ GET http://127.0.0.1:8000/Post
 Accept: application/json
 
 ###
-GET http://127.0.0.1:8080/Comment
+GET http://127.0.0.1:8000/Comment
 Accept: application/json
 
 ###
-GET http://127.0.0.1:8080/customer/200
+GET http://127.0.0.1:8000/Post/1
 
 ###
-GET http://127.0.0.1:8080/customer/500
+GET http://127.0.0.1:8000/Comment/1
 
 ###
-DELETE http://127.0.0.1:8080/customer/100
+DELETE http://127.0.0.1:8000/Post/1
 
 ###
-DELETE http://127.0.0.1:8080/customer/500
+DELETE http://127.0.0.1:8000/Comment/1
