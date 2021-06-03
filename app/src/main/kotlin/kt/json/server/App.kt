@@ -6,69 +6,81 @@ package kt.json.server
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.jackson.*
+import io.ktor.request.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import io.ktor.sessions.*
-import java.io.*
-import java.util.*
-import kotlin.io.path.*
+import io.ktor.serialization.*
+import io.ktor.util.pipeline.*
 import org.reflections.*
 import org.reflections.scanners.*
 import org.reflections.util.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import kotlinx.serialization.json.*
 
 interface IApp {
-  val greeting: String
-  fun start()
+    val greeting: String
+    fun start()
 }
+
+val logger: Logger = LoggerFactory.getLogger("main.class")
 
 class App : IApp {
-  val logger: Logger = LoggerFactory.getLogger("main.class")
-  override val greeting: String
-    get() {
-      return "Hello World!"
-    }
-
-  override fun start() {
-    println(
-        "Trace=${logger.isTraceEnabled}, Debug=${logger.isDebugEnabled}, Info=${logger.isInfoEnabled}, Warn=${logger.isWarnEnabled}, Error=${logger.isErrorEnabled}")
-    logger.info("------ INFO------")
-    logger.debug("------ DEBUG ------")
-    logger.error("------ ERROR ------")
-    logger.trace("------ TRACE ------")
-    reflectEndpoints()
-
-    embeddedServer(Netty, port = 8000) {
-          install(DefaultHeaders)
-          install(CallLogging)
-          routing {
-            endpoints()
-            health()
-          }
+    override val greeting: String
+        get() {
+            return "Hello World!"
         }
-        .start(wait = true)
-  }
+
+    override fun start() {
+        println(
+            "Trace=${logger.isTraceEnabled}, Debug=${logger.isDebugEnabled}, Info=${logger.isInfoEnabled}, Warn=${logger.isWarnEnabled}, Error=${logger.isErrorEnabled}"
+        )
+        logger.info("------ INFO------")
+        logger.debug("------ DEBUG ------")
+        logger.error("------ ERROR ------")
+        logger.trace("------ TRACE ------")
+        printRoutes()
+
+        embeddedServer(Netty, port = 8000) {
+            install(DefaultHeaders)
+            install(CallLogging)
+            install(ContentNegotiation) {
+                //handle content-type: application/json
+                json(Json {
+                    prettyPrint = true
+                    isLenient = true
+                    // ...
+                })
+            }
+            routing {
+                endpoints()
+                health()
+            }
+        }
+            .start(wait = true)
+    }
 }
 
-fun reflectEndpoints() {
-  val reflections =
-      Reflections(
-          ConfigurationBuilder()
-              .addUrls(ClasspathHelper.forPackage("kt.json.server"))
-              .setScanners(TypeAnnotationsScanner(), SubTypesScanner(false)))
+fun printRoutes() {
+    val reflections =
+        Reflections(
+            ConfigurationBuilder()
+                .addUrls(ClasspathHelper.forPackage("kt.json.server"))
+                .setScanners(TypeAnnotationsScanner(), SubTypesScanner(false))
+        )
 
-  // reflections.allTypes.forEach { println(it) }
-  reflections.getSubTypesOf(BaseSchema::class.java).forEach { it ->
-    var obj = Class.forName(it.name).newInstance()
-    println("Listening on http://localhost:8000/${it.name.split('.').last()}")
-  }
+    // reflections.allTypes.forEach { println(it) }
+    reflections.getSubTypesOf(BaseModel::class.java).forEach { it ->
+        // print routes
+        println("Routes http://localhost:8000/${it.name.split('.').last()}")
+    }
 }
 
+@kotlin.ExperimentalStdlibApi
 fun main(args: Array<String>?) {
-  println(App().greeting)
-  val app: App = App()
-  app.start()
+    println(App().greeting)
+    val app: App = App()
+    app.start()
 }

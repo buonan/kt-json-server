@@ -20,6 +20,8 @@ plugins {
     // Apply java plugin
     id("java")
 
+    kotlin("plugin.serialization") version "1.5.10"
+
     // Apply the application plugin to add support for building a CLI application in Java.
     application
 }
@@ -44,8 +46,9 @@ dependencies {
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.10")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
     implementation("org.reflections:reflections:0.9.12")
-
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
     // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
@@ -54,7 +57,7 @@ dependencies {
 
     // These are 3rd party dependencies
     implementation("org.litote.kmongo:kmongo:4.2.7")
-    implementation("org.slf4j:slf4j-log4j12:1.7.29")
+    //implementation("org.slf4j:slf4j-log4j12:1.7.29")
 
     // Use Ktor.io
     implementation("io.ktor:ktor-server-core:1.5.4")
@@ -64,6 +67,7 @@ dependencies {
     implementation("io.ktor:ktor-jackson:$ktor_version")
     implementation("io.ktor:ktor-locations:$ktor_version")
     implementation("io.ktor:ktor-metrics:$ktor_version")
+    implementation("io.ktor:ktor-serialization:$ktor_version")
 
     // Use for ktor tests
     testImplementation("io.ktor:ktor-server-test-host:1.5.4")

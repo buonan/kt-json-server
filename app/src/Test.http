@@ -1,0 +1,48 @@
+POST http://127.0.0.1:8000/Post
+Content-Type: application/json
+
+{
+  "title": "Some title",
+  "author": "Smith"
+}
+
+
+###
+POST http://127.0.0.1:8000/Comment
+Content-Type: application/json
+
+{
+  "postId": "200",
+  "body": "My Comment",
+  "author": "Smith"
+}
+
+###
+POST http://127.0.0.1:8000/Profile
+Content-Type: application/json
+
+{
+  "name": "Mary",
+  "email": "mary.smith@company.com"
+}
+
+
+###
+GET http://127.0.0.1:8000/Post
+Accept: application/json
+
+###
+GET http://127.0.0.1:8080/Comment
+Accept: application/json
+
+###
+GET http://127.0.0.1:8080/customer/200
+
+###
+GET http://127.0.0.1:8080/customer/500
+
+###
+DELETE http://127.0.0.1:8080/customer/100
+
+###
+DELETE http://127.0.0.1:8080/customer/500

@@ -1,8 +1,8 @@
 package kt.json.server
+import kotlinx.serialization.Serializable
 
-import org.litote.kmongo.*
-
+@Serializable
 data class Post (
   val title: String? = null,
   val author: String? = null
-) : BaseSchema()
+) : BaseModel()
