@@ -6,8 +6,9 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.pipeline.*
-import java.lang.reflect.Type
-import kotlin.reflect.*
+import java.util.*
+import kotlin.reflect.full.cast
+
 
 suspend fun handleGet(
     app:
@@ -42,6 +43,9 @@ suspend fun handlePost(
         var text = app.call.receiveText()
         var mapper = ObjectMapper()
         var objMapped = mapper.readValue(text, obj::class.java)
+        var baseMapped = objMapped as BaseModel
+        var uuid = UUID.randomUUID()
+        baseMapped.id = uuid.toString()
         it?.add(objMapped)
         app.call.respondText("Succeeded", status = HttpStatusCode.Created)
     }
