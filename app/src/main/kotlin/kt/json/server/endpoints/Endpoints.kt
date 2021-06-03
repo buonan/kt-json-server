@@ -25,29 +25,23 @@ fun Route.endpoints() {
         )
     reflections.getSubTypesOf(BaseModel::class.java).forEach { it ->
         val route = it.name.split('.').last()
-        val ty: Type = it
-        val t = Comment
         val className = it.name
-        val typeName = it.typeName
-        var obj = Class.forName(className).getDeclaredConstructor().newInstance()
         // iniialize storage for testing
-        globalStorageMap.put(it.name, mutableListOf<Any>() )
+        globalStorageMap.put(it.name, mutableListOf<Any>())
 
         // get plural
         get("/$route") {
-            var obj = Class.forName(className).getDeclaredConstructor().newInstance()
-            handleGetPlural(this, className)
+            handleGet(this, className)
         }
         // get singular
         get("/$route/{id}") {
-            var obj = Class.forName(className).getDeclaredConstructor().newInstance()
-            getSingular()
+            handleGetById(this, className)
             call.respondText("Hello from $route $className get single\n", ContentType.Text.Plain, HttpStatusCode.OK)
         }
         // create singular
         post("/$route") {
             try {
-                postCreateSingular(this, className)
+                handlePost(this, className)
             } catch (e: Exception) {
                 call.respondText(
                     "Hello from $route $className post single\n",
@@ -58,16 +52,14 @@ fun Route.endpoints() {
         }
         // update singular
         put("/$route/{id}") {
-            var obj = Class.forName(className).getDeclaredConstructor().newInstance()
-            updateSingular()
+            handlePut(this, className)
             call.respondText(
                 "Hello from $route $className put single\n", ContentType.Text.Plain, HttpStatusCode.OK
             )
         }
         // delete singular
         delete("/$route/{id}") {
-            var obj = Class.forName(className).getDeclaredConstructor().newInstance()
-            deleteSingular()
+            handleDelete(this, className)
             call.respondText(
                 "Hello from $route $className delete single\n", ContentType.Text.Plain, HttpStatusCode.OK
             )

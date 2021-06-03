@@ -20,47 +20,13 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import kotlinx.serialization.json.*
 
-interface IApp {
-    val greeting: String
-    fun start()
-}
-
 val logger: Logger = LoggerFactory.getLogger("main.class")
 
-class App : IApp {
-    override val greeting: String
+class App {
+    val greeting: String
         get() {
             return "Hello World!"
         }
-
-    override fun start() {
-        println(
-            "Trace=${logger.isTraceEnabled}, Debug=${logger.isDebugEnabled}, Info=${logger.isInfoEnabled}, Warn=${logger.isWarnEnabled}, Error=${logger.isErrorEnabled}"
-        )
-        logger.info("------ INFO------")
-        logger.debug("------ DEBUG ------")
-        logger.error("------ ERROR ------")
-        logger.trace("------ TRACE ------")
-        printRoutes()
-
-        embeddedServer(Netty, port = 8000) {
-            install(DefaultHeaders)
-            install(CallLogging)
-            install(ContentNegotiation) {
-                //handle content-type: application/json
-                json(Json {
-                    prettyPrint = true
-                    isLenient = true
-                    // ...
-                })
-            }
-            routing {
-                endpoints()
-                health()
-            }
-        }
-            .start(wait = true)
-    }
 }
 
 fun printRoutes() {
@@ -78,9 +44,37 @@ fun printRoutes() {
     }
 }
 
-@kotlin.ExperimentalStdlibApi
-fun main(args: Array<String>?) {
-    println(App().greeting)
-    val app: App = App()
-    app.start()
+//fun main(args: Array<String>?) {
+//    println(App().greeting)
+//    val app: App = App()
+//    app.start()
+//}
+
+fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun Application.main(testing: Boolean = false) {
+    println(
+        "Trace=${logger.isTraceEnabled}, Debug=${logger.isDebugEnabled}, Info=${logger.isInfoEnabled}, Warn=${logger.isWarnEnabled}, Error=${logger.isErrorEnabled}"
+    )
+    logger.info("------ INFO------")
+    logger.debug("------ DEBUG ------")
+    logger.error("------ ERROR ------")
+    logger.trace("------ TRACE ------")
+    printRoutes()
+    install(CORS) {
+        anyHost()
+    }
+    install(DefaultHeaders)
+    install(CallLogging)
+    install(ContentNegotiation) {
+        //handle content-type: application/json
+        json(Json {
+            prettyPrint = true
+            isLenient = true
+        })
+    }
+    routing {
+        endpoints()
+        health()
+    }
 }
+

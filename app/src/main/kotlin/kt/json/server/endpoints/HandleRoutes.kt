@@ -9,7 +9,7 @@ import io.ktor.util.pipeline.*
 import java.lang.reflect.Type
 import kotlin.reflect.*
 
-suspend fun handleGetPlural(
+suspend fun handleGet(
     app:
     PipelineContext<Unit, ApplicationCall>, className: String
 ) {
@@ -22,11 +22,15 @@ suspend fun handleGetPlural(
     }
 }
 
-suspend fun getSingular() {
+suspend fun handleGetById(
+    app:
+    PipelineContext<Unit, ApplicationCall>,
+    className: String,
+) {
     logger.trace("------ getSingular ------")
 }
 
-suspend fun postCreateSingular(
+suspend fun handlePost(
     app:
     PipelineContext<Unit, ApplicationCall>,
     className: String,
@@ -43,10 +47,21 @@ suspend fun postCreateSingular(
     }
 }
 
-suspend fun updateSingular() {
+suspend fun handlePut(
+    app:
+    PipelineContext<Unit, ApplicationCall>,
+    className: String,
+) {
     logger.trace("------ updateSingular ------")
 }
 
-suspend fun deleteSingular() {
+suspend fun handleDelete(
+    app:
+    PipelineContext<Unit, ApplicationCall>,
+    className: String,
+) {
     logger.trace("------ deleteSingular ------")
+    var storage = globalStorageMap.get(className)
+    storage.let {
+    }
 }
