@@ -3,6 +3,7 @@
  */
 package kt.json.server
 
+import com.google.gson.Gson
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -19,8 +20,16 @@ import org.reflections.util.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import kotlinx.serialization.json.*
+import java.io.File
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
 
+// Global logger
 val logger: Logger = LoggerFactory.getLogger("main.class")
+
+// Storage for testing
+var globalStorageMap = HashMap<String, HashMap<Int, Any>>()
+var globalCounter: Int = 1
 
 class App {
     val greeting: String
@@ -38,10 +47,57 @@ fun printRoutes() {
         )
 
     reflections.getSubTypesOf(IBase::class.java).forEach { it ->
+        var name = it.name.split('.').last()
         // print routes
-        println("Routes http://localhost:8000/${it.name.split('.').last()}")
+        println("Routes http://localhost:8000/${name}")
+
+        // initialize persistent storages
+        initStorageMap(it.name)
     }
 }
+
+fun initStorageMap(className: String) {
+    var filename = "${File("").absolutePath}/${className}.json"
+    println("Storage map file = $filename")
+
+    val gson = Gson()
+    var file = File(filename)
+    var fileExists = file.exists()
+    if (fileExists) {
+        var contents = file.readText()
+        val type: Type = object : TypeToken<HashMap<Int, Any>>() {}.type
+        globalStorageMap[className] = gson.fromJson(contents, type)
+    } else {
+        println("$filename file does not exist.")
+
+        // iniialize storage for testing
+        globalStorageMap[className] = hashMapOf<Int, Any>()
+    }
+}
+
+fun saveStorageMap(className: String) {
+    var filename = "${File("").absolutePath}/${className}.json"
+    println("Storage map file = $filename")
+
+    val gson = Gson()
+    var file = File(filename)
+    var fileExists = file.exists()
+    var storage = globalStorageMap[className]
+    var contents = gson.toJson(storage)
+    if (fileExists) {
+        file.writeText(contents)
+    } else {
+        // create a new file
+        val isNewFileCreated: Boolean = file.createNewFile()
+        if (isNewFileCreated) {
+            println("$filename is created successfully.")
+        } else {
+            println("$filename already exists.")
+        }
+        file.writeText(contents)
+    }
+}
+
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.main(testing: Boolean = false) {
@@ -70,4 +126,28 @@ fun Application.main(testing: Boolean = false) {
         health()
     }
 }
+fun Application.events(){
+    environment.monitor.subscribe(ApplicationStarting, ::onStarting)
+    environment.monitor.subscribe(ApplicationStarted, ::onStarted)
+    environment.monitor.subscribe(ApplicationStopping, ::onStopping)
+    environment.monitor.subscribe(ApplicationStopped, ::onStopped)
+    environment.monitor.subscribe(ApplicationStopPreparing, ::onPrepareStop)
+}
+
+private fun onStarting(app: Application){
+    app.log.info("Application starting")
+}
+private fun onStarted(app: Application){
+    app.log.info("Application started")
+}
+private fun onStopping(app: Application){
+    app.log.info("Application stopping")
+}
+private fun onStopped(app: Application){
+    app.log.info("Application stopped")
+}
+private fun onPrepareStop(env: ApplicationEnvironment){
+    env.log.info("Preparing App Stop")
+}
+
 

@@ -17,7 +17,9 @@ suspend fun handleGet(
     logger.trace("------ getPlural ------")
     var storage = globalStorageMap[className]
     if (!storage.isNullOrEmpty()) {
-        storage.let { app.call.respond(it) }
+        val json = Gson()
+        var elJson = json.toJson(storage)
+        storage.let { app.call.respondText(elJson) }
     } else {
         app.call.respondText("No data available", status = HttpStatusCode.OK)
     }
@@ -38,6 +40,7 @@ suspend fun handleGetById(
             var elJSON = element.toString()
             val json = Gson()
             val j = json.fromJson(elJSON, obj::class.java)
+            saveStorageMap(className)
             app.call.respond(j)
         }
     } else {
@@ -61,6 +64,7 @@ suspend fun handlePost(
         baseMapped.id = globalCounter++;
         // Create
         it?.put(baseMapped.id as Int, baseMapped)
+        saveStorageMap(className)
         app.call.respondText("Create", status = HttpStatusCode.OK)
     }
 }
@@ -80,6 +84,7 @@ suspend fun handlePut(
         var objMapped = mapper.readValue(text, obj::class.java)
         // Update
         it?.put(paramId, objMapped)
+        saveStorageMap(className)
         app.call.respondText(
             "Update\n", ContentType.Text.Plain, status = HttpStatusCode.OK
         )
@@ -97,6 +102,7 @@ suspend fun handleDelete(
     storage.let {
         // Delete
         it?.remove(paramId)
+        saveStorageMap(className)
         app.call.respondText(
             "Delete\n", ContentType.Text.Plain, status = HttpStatusCode.OK
         )

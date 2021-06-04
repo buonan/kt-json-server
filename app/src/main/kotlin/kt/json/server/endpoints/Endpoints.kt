@@ -9,11 +9,6 @@ import org.reflections.*
 import org.reflections.scanners.*
 import org.reflections.util.*
 
-// Storage for testing
-val globalStorageMap = HashMap<String, HashMap<Int, Any>>()
-
-var globalCounter = 1
-
 fun Route.endpoints() {
   val reflections =
       Reflections(
@@ -23,15 +18,13 @@ fun Route.endpoints() {
   reflections.getSubTypesOf(IBase::class.java).forEach { it ->
     val route = it.name.split('.').last()
     val className = it.name
-    // iniialize storage for testing
-    globalStorageMap[it.name] = hashMapOf<Int, Any>()
 
     // get plural
     get("/$route") {
       try {
         handleGet(this, className)
       } catch (e: Exception) {
-        call.respondText("Error\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
+        call.respondText("Error: ${e.message}\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
       }
     }
     // get singular
@@ -47,7 +40,7 @@ fun Route.endpoints() {
       try {
         handlePost(this, className)
       } catch (e: Exception) {
-        call.respondText("Error\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
+        call.respondText("Error: ${e.message}\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
       }
     }
     // update singular
@@ -55,7 +48,7 @@ fun Route.endpoints() {
       try {
         handlePut(this, className, call.parameters["id"]!!.toInt())
       } catch (e: Exception) {
-        call.respondText("Error\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
+        call.respondText("Error: ${e.message}\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
       }
     }
     // delete singular
@@ -63,7 +56,7 @@ fun Route.endpoints() {
       try {
         handleDelete(this, className, call.parameters["id"]!!.toInt())
       } catch (e: Exception) {
-        call.respondText("Error\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
+        call.respondText("Error: ${e.message}\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
       }
     }
   }
