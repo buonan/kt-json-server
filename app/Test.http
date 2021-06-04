@@ -1,3 +1,4 @@
+### Create Singular
 POST http://127.0.0.1:8000/Post
 Content-Type: application/json
 
@@ -5,8 +6,6 @@ Content-Type: application/json
   "title": "Some title",
   "author": "Smith"
 }
-
-
 ###
 POST http://127.0.0.1:8000/Comment
 Content-Type: application/json
@@ -16,7 +15,6 @@ Content-Type: application/json
   "body": "My Comment",
   "author": "Smith"
 }
-
 ###
 POST http://127.0.0.1:8000/Profile
 Content-Type: application/json
@@ -25,24 +23,24 @@ Content-Type: application/json
   "name": "Mary",
   "email": "mary.smith@company.com"
 }
-
-
-###
+### Get Plurals
 GET http://127.0.0.1:8000/Post
 Accept: application/json
-
 ###
 GET http://127.0.0.1:8000/Comment
 Accept: application/json
-
 ###
+GET http://127.0.0.1:8000/Profile
+Accept: application/json
+### Get Singular
 GET http://127.0.0.1:8000/Post/1
-
 ###
-GET http://127.0.0.1:8000/Comment/1
-
+GET http://127.0.0.1:8000/Comment/2
 ###
+GET http://127.0.0.1:8000/Profile/3
+### Delete Singular
 DELETE http://127.0.0.1:8000/Post/1
-
 ###
-DELETE http://127.0.0.1:8000/Comment/1
+DELETE http://127.0.0.1:8000/Comment/2
+###
+DELETE http://127.0.0.1:8000/Profile/3
