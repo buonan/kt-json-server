@@ -87,7 +87,7 @@ suspend fun handlePut(
         var mapper = ObjectMapper()
         var objMapped = mapper.readValue(text, obj::class.java)
         // Update
-        it!![paramId] = paramId
+        it!![paramId] = objMapped
         saveStorageMap(className)
         app.call.respondText(
             "Update\n", ContentType.Text.Plain, status = HttpStatusCode.OK
@@ -105,7 +105,7 @@ suspend fun handleDelete(
     var storage = globalStorageMap.get(className)
     storage.let {
         // Delete
-        it?.remove(paramId)
+        it?.removeAt(paramId)
         saveStorageMap(className)
         app.call.respondText(
             "Delete\n", ContentType.Text.Plain, status = HttpStatusCode.OK
