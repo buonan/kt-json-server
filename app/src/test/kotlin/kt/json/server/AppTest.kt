@@ -25,7 +25,13 @@ class AppTest {
     @Test
     fun testRequests() =
         withTestApplication(Application::main) {
-            with(handleRequest(HttpMethod.Get, "/Post")) {
+            with(handleRequest(HttpMethod.Get, "/posts")) {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+            with(handleRequest(HttpMethod.Get, "/comments")) {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+            with(handleRequest(HttpMethod.Get, "/profiles")) {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
             with(handleRequest(HttpMethod.Get, "/health")) {

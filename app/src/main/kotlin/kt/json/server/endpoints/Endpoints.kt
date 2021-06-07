@@ -8,6 +8,7 @@ import io.ktor.routing.*
 import org.reflections.*
 import org.reflections.scanners.*
 import org.reflections.util.*
+import java.util.*
 
 fun Route.endpoints() {
   val reflections =
@@ -16,13 +17,18 @@ fun Route.endpoints() {
               .addUrls(ClasspathHelper.forPackage("kt.json.server"))
               .setScanners(TypeAnnotationsScanner(), SubTypesScanner(false)))
   reflections.getSubTypesOf(IBase::class.java).forEach { it ->
-    val route = it.name.split('.').last()
+    // make routes plural /posts, /comments etc
+    var route = "${it.name.split('.').last().lowercase(Locale.getDefault())}s"
     val className = it.name
 
     // get plural
     get("/$route") {
       try {
-        handleGet(this, className)
+        if (call.request.queryParameters.isEmpty()) {
+          handleGet(this, className)
+        } else {
+          handleGetWithParams(this, call.request.queryString(), className)
+        }
       } catch (e: Exception) {
         call.respondText("Error: ${e.message}\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
       }
@@ -32,7 +38,7 @@ fun Route.endpoints() {
       try {
         handleGetById(this, className, call.parameters["id"]!!.toInt())
       } catch (e: Exception) {
-        call.respondText("Error\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
+        call.respondText("Error ${e.message}\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
       }
     }
     // create singular

@@ -6,14 +6,8 @@ package kt.json.server
 import com.google.gson.Gson
 import io.ktor.application.*
 import io.ktor.features.*
-import io.ktor.http.*
-import io.ktor.jackson.*
-import io.ktor.request.*
 import io.ktor.routing.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import io.ktor.serialization.*
-import io.ktor.util.pipeline.*
 import org.reflections.*
 import org.reflections.scanners.*
 import org.reflections.util.*
@@ -23,6 +17,8 @@ import kotlinx.serialization.json.*
 import java.io.File
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
+import java.util.*
+import kotlin.collections.HashMap
 
 // Global logger
 val logger: Logger = LoggerFactory.getLogger("main.class")
@@ -47,9 +43,9 @@ fun printRoutes() {
         )
 
     reflections.getSubTypesOf(IBase::class.java).forEach { it ->
-        var name = it.name.split('.').last()
+        var name = it.name.split('.').last().lowercase(Locale.getDefault())
         // print routes
-        println("Routes http://localhost:8000/${name}")
+        println("Routes http://localhost:8000/${name}s")
 
         // initialize persistent storages
         initStorageMap(it.name)
@@ -126,7 +122,8 @@ fun Application.main(testing: Boolean = false) {
         health()
     }
 }
-fun Application.events(){
+
+fun Application.events() {
     environment.monitor.subscribe(ApplicationStarting, ::onStarting)
     environment.monitor.subscribe(ApplicationStarted, ::onStarted)
     environment.monitor.subscribe(ApplicationStopping, ::onStopping)
@@ -134,19 +131,23 @@ fun Application.events(){
     environment.monitor.subscribe(ApplicationStopPreparing, ::onPrepareStop)
 }
 
-private fun onStarting(app: Application){
+private fun onStarting(app: Application) {
     app.log.info("Application starting")
 }
-private fun onStarted(app: Application){
+
+private fun onStarted(app: Application) {
     app.log.info("Application started")
 }
-private fun onStopping(app: Application){
+
+private fun onStopping(app: Application) {
     app.log.info("Application stopping")
 }
-private fun onStopped(app: Application){
+
+private fun onStopped(app: Application) {
     app.log.info("Application stopped")
 }
-private fun onPrepareStop(env: ApplicationEnvironment){
+
+private fun onPrepareStop(env: ApplicationEnvironment) {
     env.log.info("Preparing App Stop")
 }
 

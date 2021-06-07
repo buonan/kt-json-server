@@ -1,14 +1,13 @@
 package kt.json.server
 
-import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.pipeline.*
-import kotlinx.serialization.*
 import com.google.gson.Gson
+import io.ktor.util.*
 
 suspend fun handleGet(
     app:
@@ -19,6 +18,23 @@ suspend fun handleGet(
     if (!storage.isNullOrEmpty()) {
         val json = Gson()
         var elJson = json.toJson(storage)
+        storage.let { app.call.respondText(elJson) }
+    } else {
+        app.call.respondText("No data available", status = HttpStatusCode.OK)
+    }
+}
+suspend fun handleGetWithParams(
+    app:
+    PipelineContext<Unit, ApplicationCall>, queryString: String, className: String
+) {
+    logger.trace("------ getPlural ------")
+    var storage = globalStorageMap[className]
+    if (!storage.isNullOrEmpty()) {
+        val json = Gson()
+        val pairs = Helpers.ParamsSplit(queryString)
+        val results = Helpers.SearchHashMap(storage, pairs)
+        // search with query string params
+        var elJson = json.toJson(results)
         storage.let { app.call.respondText(elJson) }
     } else {
         app.call.respondText("No data available", status = HttpStatusCode.OK)
@@ -35,13 +51,10 @@ suspend fun handleGetById(
     var storage = globalStorageMap[className]
     if (!storage.isNullOrEmpty()) {
         storage.let {
-            var element = it[paramId]
-            var obj = Class.forName(className).getDeclaredConstructor().newInstance()
-            var elJSON = element.toString()
             val json = Gson()
-            val j = json.fromJson(elJSON, obj::class.java)
-            saveStorageMap(className)
-            app.call.respond(j)
+            var element = it[paramId]
+            var elJSON = json.toJson(element)
+            app.call.respond(elJSON)
         }
     } else {
         app.call.respondText("No data available", status = HttpStatusCode.NoContent)
