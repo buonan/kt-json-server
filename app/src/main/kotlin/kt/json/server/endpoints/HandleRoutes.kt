@@ -47,8 +47,14 @@ suspend fun handleGetById(
     storage?.let {
         val json = Gson()
         var element = it[paramId]
-        var elJSON = json.toJson(element)
-        app.call.respond(elJSON)
+        if (element == null) {
+            app.call.respondText(
+                "Delete\n", ContentType.Text.Plain, status = HttpStatusCode.NoContent
+            )
+        } else {
+            var elJSON = json.toJson(element)
+            app.call.respond(elJSON)
+        }
     }
 }
 
@@ -81,7 +87,7 @@ suspend fun handlePut(
 ) {
     logger.trace("------ updateSingular ------")
     var storage = globalStorageMap[className]
-    storage.let {
+    storage?.let {
         var obj = Class.forName(className).getDeclaredConstructor().newInstance()
         var text = app.call.receiveText()
         var mapper = ObjectMapper()
@@ -103,12 +109,19 @@ suspend fun handleDelete(
 ) {
     logger.trace("------ deleteSingular ------")
     var storage = globalStorageMap.get(className)
-    storage.let {
-        // Delete
-        it?.removeAt(paramId)
-        saveStorageMap(className)
-        app.call.respondText(
-            "Delete\n", ContentType.Text.Plain, status = HttpStatusCode.OK
-        )
+    storage?.let {
+        var element = it[paramId]
+        if (element == null) {
+            app.call.respondText(
+                "Delete\n", ContentType.Text.Plain, status = HttpStatusCode.NoContent
+            )
+        } else {
+            // Delete
+            it?.removeAt(paramId)
+            saveStorageMap(className)
+            app.call.respondText(
+                "Delete\n", ContentType.Text.Plain, status = HttpStatusCode.OK
+            )
+        }
     }
 }

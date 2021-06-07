@@ -1,13 +1,18 @@
 ### Create Singular
-POST http://127.0.0.1:8000/Post
+POST http://127.0.0.1:8000/posts
 Content-Type: application/json
 
 {
   "title": "Some title",
   "author": "Smith"
 }
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
 ###
-POST http://127.0.0.1:8000/Comment
+POST http://127.0.0.1:8000/comments
 Content-Type: application/json
 
 {
@@ -15,8 +20,13 @@ Content-Type: application/json
   "body": "My Comment",
   "author": "Smith"
 }
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
 ###
-POST http://127.0.0.1:8000/Profile
+POST http://127.0.0.1:8000/profiles
 Content-Type: application/json
 
 {
@@ -24,23 +34,78 @@ Content-Type: application/json
   "email": "mary.smith@company.com"
 }
 ### Get Plurals
-GET http://127.0.0.1:8000/Post
+GET http://127.0.0.1:8000/posts
 Accept: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
 ###
-GET http://127.0.0.1:8000/Comment
+GET http://127.0.0.1:8000/comments
 Accept: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
 ###
-GET http://127.0.0.1:8000/Profile
+GET http://127.0.0.1:8000/profiles
 Accept: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
 ### Get Singular
-GET http://127.0.0.1:8000/Post/1
+GET http://127.0.0.1:8000/posts/0
+Accept: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
 ###
-GET http://127.0.0.1:8000/Comment/2
+GET http://127.0.0.1:8000/comments/0
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
 ###
-GET http://127.0.0.1:8000/Profile/3
+GET http://127.0.0.1:8000/profiles/0
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
 ### Delete Singular
-DELETE http://127.0.0.1:8000/Post/1
+DELETE http://127.0.0.1:8000/posts/0
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
 ###
-DELETE http://127.0.0.1:8000/Comment/2
+DELETE http://127.0.0.1:8000/comments/0
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
 ###
-DELETE http://127.0.0.1:8000/Profile/3
+DELETE http://127.0.0.1:8000/profiles/0
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
