@@ -25,7 +25,6 @@ val logger: Logger = LoggerFactory.getLogger("main.class")
 
 // Storage for testing
 var globalStorageMap = HashMap<String, HashMap<Int, Any>>()
-var globalCounter: Int = 1
 
 class App {
     val greeting: String

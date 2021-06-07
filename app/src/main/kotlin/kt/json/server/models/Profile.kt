@@ -8,11 +8,4 @@ data class Profile (
   override var id: Int? = null,
   var name: String? = null,
   var email: String? = null,
-) : IBase {
-  override fun toString(): String {
-    var s = ""
-    Profile::class.memberProperties.forEach { member -> s += """ "${member.name}": "${member.get(this)}",""" }
-    s = s.substring(0, s.length - 1);
-    return "{$s}"
-  }
-}
+) : IBase

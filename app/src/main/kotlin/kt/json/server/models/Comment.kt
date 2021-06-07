@@ -9,11 +9,4 @@ data class Comment(
     var postId: Int? = null,
     var body: String? = null,
     var author: String? = null,
-) : IBase {
-    override fun toString(): String {
-        var s = ""
-        Comment::class.memberProperties.forEach { member -> s += """ "${member.name}": "${member.get(this)}",""" }
-        s = s.substring(0, s.length - 1);
-        return "{$s}"
-    }
-}
+) : IBase

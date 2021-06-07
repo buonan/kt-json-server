@@ -23,7 +23,7 @@ suspend fun handleGet(
         app.call.respondText("No data available", status = HttpStatusCode.OK)
     }
 }
-suspend fun handleGetWithParams(
+suspend fun handleGetWithQueryString(
     app:
     PipelineContext<Unit, ApplicationCall>, queryString: String, className: String
 ) {
@@ -74,7 +74,7 @@ suspend fun handlePost(
         var mapper = ObjectMapper()
         var objMapped = mapper.readValue(text, obj::class.java)
         var baseMapped = objMapped as IBase
-        baseMapped.id = globalCounter++;
+        baseMapped.id = storage?.size!! + 1
         // Create
         it?.put(baseMapped.id as Int, baseMapped)
         saveStorageMap(className)

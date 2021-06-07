@@ -27,7 +27,7 @@ fun Route.endpoints() {
         if (call.request.queryParameters.isEmpty()) {
           handleGet(this, className)
         } else {
-          handleGetWithParams(this, call.request.queryString(), className)
+          handleGetWithQueryString(this, call.request.queryString(), className)
         }
       } catch (e: Exception) {
         call.respondText("Error: ${e.message}\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)

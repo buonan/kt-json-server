@@ -4,5 +4,4 @@ import kotlin.reflect.full.memberProperties
 
 interface IBase {
     var id: Int?
-    override fun toString(): String
 }
