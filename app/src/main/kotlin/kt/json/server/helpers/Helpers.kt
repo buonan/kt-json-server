@@ -17,17 +17,21 @@ object Helpers {
         return pairs;
     }
 
-    fun SearchHashMap(mapAny: HashMap<Int, Any>, mapSearchTerms: HashMap<String, String>): Any? {
+    fun SearchHashMap(mapAny: ArrayList<Any>, mapSearchTerms: HashMap<String, String>): Any? {
         var found = ArrayList<Any>()
-        for ((sKey, sValue) in mapSearchTerms)
-        for ((k, v) in mapAny) {
-            var hashAny = mapAny[k] as LinkedTreeMap<String, Any>
-            for ((key, value) in hashAny) {
-                println("$k $key = $value")
-                val ss = URLDecoder.decode(sValue)
-                if (key == sKey && value.toString().contains(ss))
-                {
-                    found.add(v)
+        for ((sKey, sValue) in mapSearchTerms) {
+            mapAny.let { it ->
+                println("${it}")
+                it.forEach { it2 ->
+                    println("${it2}")
+                    it2.javaClass.kotlin.members.forEach { it3 ->
+                        if (it3.name == sKey) {
+                            var h = it3.call(it2)
+                            if (h.toString().contains(sValue)) {
+                                found.add(it2)
+                            }
+                        }
+                    }
                 }
             }
         }

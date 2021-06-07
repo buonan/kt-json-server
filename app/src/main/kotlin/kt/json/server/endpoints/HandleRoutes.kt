@@ -65,9 +65,9 @@ suspend fun handlePost(
         var mapper = ObjectMapper()
         var objMapped = mapper.readValue(text, obj::class.java)
         var baseMapped = objMapped as IBase
-        baseMapped.id = storage?.size!! + 1
+        baseMapped.id = storage?.size!!
         // Create
-        it?.put(baseMapped.id as Int, baseMapped)
+        it?.add(baseMapped)
         saveStorageMap(className)
         app.call.respondText("Create", status = HttpStatusCode.OK)
     }
@@ -87,7 +87,7 @@ suspend fun handlePut(
         var mapper = ObjectMapper()
         var objMapped = mapper.readValue(text, obj::class.java)
         // Update
-        it?.put(paramId, objMapped)
+        it!![paramId] = paramId
         saveStorageMap(className)
         app.call.respondText(
             "Update\n", ContentType.Text.Plain, status = HttpStatusCode.OK

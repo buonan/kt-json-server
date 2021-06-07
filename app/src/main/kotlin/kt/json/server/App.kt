@@ -3,7 +3,9 @@
  */
 package kt.json.server
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.gson.Gson
+import com.google.gson.internal.LinkedTreeMap
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.routing.*
@@ -24,7 +26,7 @@ import kotlin.collections.HashMap
 val logger: Logger = LoggerFactory.getLogger("main.class")
 
 // Storage for testing
-var globalStorageMap = HashMap<String, HashMap<Int, Any>>()
+var globalStorageMap = HashMap<String, ArrayList<Any>>()
 
 class App {
     val greeting: String
@@ -58,15 +60,15 @@ fun initStorageMap(className: String) {
     val gson = Gson()
     var file = File(filename)
     var fileExists = file.exists()
+    val objType: Type? = GetObjectType(className)
     if (fileExists) {
         var contents = file.readText()
-        val type: Type = object : TypeToken<HashMap<Int, Any>>() {}.type
-        globalStorageMap[className] = gson.fromJson(contents, type)
+        globalStorageMap[className] = gson.fromJson(contents, objType)
     } else {
         println("$filename file does not exist.")
 
         // iniialize storage for testing
-        globalStorageMap[className] = hashMapOf<Int, Any>()
+        globalStorageMap[className] = arrayListOf<Any>()
     }
 }
 
@@ -78,7 +80,8 @@ fun saveStorageMap(className: String) {
     var file = File(filename)
     var fileExists = file.exists()
     var storage = globalStorageMap[className]
-    var contents = gson.toJson(storage)
+    val objType: Type? = GetObjectType(className)
+    var contents = gson.toJson(storage, objType)
     if (fileExists) {
         file.writeText(contents)
     } else {
@@ -91,6 +94,22 @@ fun saveStorageMap(className: String) {
         }
         file.writeText(contents)
     }
+}
+
+fun GetObjectType(className: String) : Type? {
+    var objType: Type? = null
+    when (className) {
+        Post::class.qualifiedName -> {
+            objType = object : TypeToken<ArrayList<Post>>() {}.type
+        }
+        Comment::class.qualifiedName -> {
+            objType = object : TypeToken<ArrayList<Comment>>() {}.type
+        }
+        Profile::class.qualifiedName -> {
+            objType = object : TypeToken<ArrayList<Profile>>() {}.type
+        }
+    }
+    return objType
 }
 
 
