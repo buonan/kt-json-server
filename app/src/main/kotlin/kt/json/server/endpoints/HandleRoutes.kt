@@ -15,29 +15,24 @@ suspend fun handleGet(
 ) {
     logger.trace("------ getPlural ------")
     var storage = globalStorageMap[className]
-    if (!storage.isNullOrEmpty()) {
-        val json = Gson()
-        var elJson = json.toJson(storage)
-        storage.let { app.call.respondText(elJson) }
-    } else {
-        app.call.respondText("No data available", status = HttpStatusCode.OK)
-    }
+    val json = Gson()
+    var elJson = json.toJson(storage)
+    storage.let { app.call.respondText(elJson) }
 }
+
 suspend fun handleGetWithQueryString(
     app:
     PipelineContext<Unit, ApplicationCall>, queryString: String, className: String
 ) {
     logger.trace("------ getPlural ------")
     var storage = globalStorageMap[className]
-    if (!storage.isNullOrEmpty()) {
-        val json = Gson()
-        val pairs = Helpers.ParamsSplit(queryString)
+    val json = Gson()
+    val pairs = Helpers.ParamsSplit(queryString)
+    storage?.let {
         val results = Helpers.SearchHashMap(storage, pairs)
         // search with query string params
         var elJson = json.toJson(results)
         storage.let { app.call.respondText(elJson) }
-    } else {
-        app.call.respondText("No data available", status = HttpStatusCode.OK)
     }
 }
 
@@ -49,15 +44,11 @@ suspend fun handleGetById(
 ) {
     logger.trace("------ getSingular ------")
     var storage = globalStorageMap[className]
-    if (!storage.isNullOrEmpty()) {
-        storage.let {
-            val json = Gson()
-            var element = it[paramId]
-            var elJSON = json.toJson(element)
-            app.call.respond(elJSON)
-        }
-    } else {
-        app.call.respondText("No data available", status = HttpStatusCode.NoContent)
+    storage?.let {
+        val json = Gson()
+        var element = it[paramId]
+        var elJSON = json.toJson(element)
+        app.call.respond(elJSON)
     }
 }
 
