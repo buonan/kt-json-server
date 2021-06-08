@@ -85,6 +85,38 @@ client.test("Request executed successfully", function() {
 client.assert(response.status === 200, "Response status is not 200");
 });
 %}
+### Sorting
+GET http://127.0.0.1:8000/profiles?_sort=views&_order=asc
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+### pagination
+GET http://127.0.0.1:8000/profiles?_page=7&_limit=20
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+### slice
+GET http://127.0.0.1:8000/profiles?_start=20&_end=30
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+### operators
+GET http://127.0.0.1:8000/profiles?views_gte=10&views_lte=20
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
 ### Delete Singular
 DELETE http://127.0.0.1:8000/posts/0
 
