@@ -27,7 +27,8 @@ object Helpers {
                     it2.javaClass.kotlin.members.forEach { it3 ->
                         if (it3.name == sKey) {
                             var h = it3.call(it2)
-                            if (h.toString().contains(sValue)) {
+                            val ss = URLDecoder.decode(sValue)
+                            if (h.toString().contains(ss)) {
                                 found.add(it2)
                             }
                         }
