@@ -20,23 +20,39 @@ object Helpers {
     }
 
     fun SearchHashMap(mapAny: ArrayList<Any>, mapSearchTerms: HashMap<String, Operator>): Any? {
-        var found = ArrayList<Any>()
-        for ((sKey, sOpValue) in mapSearchTerms) {
+        var found: MutableList<Any> = ArrayList<Any>()
+        loop@ for ((sKey, sOpValue) in mapSearchTerms) {
             when (sKey) {
                 "_sort" -> {
-                    logger.trace("------ sort ------")
+                    logger.trace("------ _sort ------")
                 }
                 "_page" -> {
-                    logger.trace("------ paginate ------")
+                    logger.trace("------ _page ------")
+                    var index = 0;
+                    var itemsPerPage = 10
+                    for ((sKey2, sOpValue2) in mapSearchTerms) {
+                        logger.trace("------ _limit ------")
+                        when (sKey2) {
+                            "_page" -> {
+                                index = sOpValue2.value.toInt()
+                            }
+                            "_limit" -> {
+                                itemsPerPage = sOpValue2.value.toInt()
+                            }
+                        }
+                    }
+                    found = mapAny.subList(index, index+itemsPerPage)
+                    break@loop
                 }
                 "_start" -> {
-                    logger.trace("------ slice ------")
+                    logger.trace("------ _start ------")
                 }
                 "_gte" -> {
-                    logger.trace("------ operators ------")
+                    logger.trace("------ _gte ------")
 
                 }
                 else -> {
+                    logger.trace("------ exact match ------")
                     mapAny.let { it ->
                         println("${it}")
                         it.forEach { it2 ->
