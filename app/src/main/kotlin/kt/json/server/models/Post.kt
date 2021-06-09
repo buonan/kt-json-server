@@ -1,6 +1,5 @@
 package kt.json.server
 import kotlinx.serialization.Serializable
-import kotlin.reflect.full.memberProperties
 
 @Serializable
 data class Post (
