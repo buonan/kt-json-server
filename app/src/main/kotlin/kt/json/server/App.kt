@@ -60,7 +60,7 @@ fun initStorageMap(className: String) {
     val gson = Gson()
     var file = File(filename)
     var fileExists = file.exists()
-    val objType: Type? = GetObjectType(className)
+    val objType: Type? = Helpers.GetObjectType(className)
     if (fileExists) {
         var contents = file.readText()
         globalStorageMap[className] = gson.fromJson(contents, objType)
@@ -80,7 +80,7 @@ fun saveStorageMap(className: String) {
     var file = File(filename)
     var fileExists = file.exists()
     var storage = globalStorageMap[className]
-    val objType: Type? = GetObjectType(className)
+    val objType: Type? = Helpers.GetObjectType(className)
     var contents = gson.toJson(storage, objType)
     if (fileExists) {
         file.writeText(contents)
@@ -95,23 +95,6 @@ fun saveStorageMap(className: String) {
         file.writeText(contents)
     }
 }
-
-fun GetObjectType(className: String) : Type? {
-    var objType: Type? = null
-    when (className) {
-        Post::class.qualifiedName -> {
-            objType = object : TypeToken<ArrayList<Post>>() {}.type
-        }
-        Comment::class.qualifiedName -> {
-            objType = object : TypeToken<ArrayList<Comment>>() {}.type
-        }
-        Profile::class.qualifiedName -> {
-            objType = object : TypeToken<ArrayList<Profile>>() {}.type
-        }
-    }
-    return objType
-}
-
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.main(testing: Boolean = false) {
@@ -141,32 +124,5 @@ fun Application.main(testing: Boolean = false) {
     }
 }
 
-fun Application.events() {
-    environment.monitor.subscribe(ApplicationStarting, ::onStarting)
-    environment.monitor.subscribe(ApplicationStarted, ::onStarted)
-    environment.monitor.subscribe(ApplicationStopping, ::onStopping)
-    environment.monitor.subscribe(ApplicationStopped, ::onStopped)
-    environment.monitor.subscribe(ApplicationStopPreparing, ::onPrepareStop)
-}
-
-private fun onStarting(app: Application) {
-    app.log.info("Application starting")
-}
-
-private fun onStarted(app: Application) {
-    app.log.info("Application started")
-}
-
-private fun onStopping(app: Application) {
-    app.log.info("Application stopping")
-}
-
-private fun onStopped(app: Application) {
-    app.log.info("Application stopped")
-}
-
-private fun onPrepareStop(env: ApplicationEnvironment) {
-    env.log.info("Preparing App Stop")
-}
 
 

@@ -29,7 +29,7 @@ suspend fun handleGetWithQueryString(
     val json = Gson()
     val pairs = Helpers.ParamsSplit(queryString)
     storage?.let {
-        val results = Helpers.SearchHashMap(storage, pairs)
+        val results = Helpers.SearchHashMap(className, storage, pairs)
         // search with query string params
         var elJson = json.toJson(results)
         storage.let { app.call.respondText(elJson) }
