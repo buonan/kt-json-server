@@ -47,14 +47,8 @@ suspend fun handleGetById(
     storage?.let {
         val json = Gson()
         var element = it[paramId]
-        if (element == null) {
-            app.call.respondText(
-                "Delete\n", ContentType.Text.Plain, status = HttpStatusCode.NoContent
-            )
-        } else {
-            var elJSON = json.toJson(element)
-            app.call.respond(elJSON)
-        }
+        var elJSON = json.toJson(element)
+        app.call.respond(elJSON)
     }
 }
 
@@ -74,7 +68,7 @@ suspend fun handlePost(
         baseMapped.id = storage?.size!!
         // Create
         it?.add(baseMapped)
-        saveStorageMap(className)
+        Helpers.saveStorageMap(className)
         app.call.respondText("Create", status = HttpStatusCode.OK)
     }
 }
@@ -93,8 +87,8 @@ suspend fun handlePut(
         var mapper = ObjectMapper()
         var objMapped = mapper.readValue(text, obj::class.java)
         // Update
-        it!![paramId] = objMapped
-        saveStorageMap(className)
+        it[paramId] = objMapped
+        Helpers.saveStorageMap(className)
         app.call.respondText(
             "Update\n", ContentType.Text.Plain, status = HttpStatusCode.OK
         )
@@ -110,18 +104,11 @@ suspend fun handleDelete(
     logger.trace("------ deleteSingular ------")
     var storage = globalStorageMap.get(className)
     storage?.let {
-        var element = it[paramId]
-        if (element == null) {
-            app.call.respondText(
-                "Delete\n", ContentType.Text.Plain, status = HttpStatusCode.NoContent
-            )
-        } else {
-            // Delete
-            it?.removeAt(paramId)
-            saveStorageMap(className)
-            app.call.respondText(
-                "Delete\n", ContentType.Text.Plain, status = HttpStatusCode.OK
-            )
-        }
+        // Delete
+        it.removeAt(paramId)
+        Helpers.saveStorageMap(className)
+        app.call.respondText(
+            "Delete\n", ContentType.Text.Plain, status = HttpStatusCode.OK
+        )
     }
 }

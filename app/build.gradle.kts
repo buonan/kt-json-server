@@ -69,6 +69,7 @@ dependencies {
     implementation("io.ktor:ktor-locations:$ktor_version")
     implementation("io.ktor:ktor-metrics:$ktor_version")
     implementation("io.ktor:ktor-serialization:$ktor_version")
+    implementation("io.ktor:ktor-auth:$ktor_version")
 
     // Use for ktor tests
     testImplementation("io.ktor:ktor-server-test-host:1.5.4")

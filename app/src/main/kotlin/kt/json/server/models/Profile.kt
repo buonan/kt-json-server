@@ -1,10 +1,10 @@
 package kt.json.server
 
-import kotlinx.serialization.Serializable
+import java.util.*
 
-@Serializable
 data class Profile (
   override var id: Int? = null,
   var name: String? = null,
   var email: String? = null,
-) : IBase
+  var createdDate: Calendar? = null,
+  ) : IBase

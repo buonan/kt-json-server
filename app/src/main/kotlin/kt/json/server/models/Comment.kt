@@ -1,11 +1,11 @@
 package kt.json.server
 
-import kotlinx.serialization.Serializable
+import java.util.*
 
-@Serializable
 data class Comment(
     override var id: Int? = null,
     var postId: Int? = null,
     var body: String? = null,
     var author: String? = null,
+    var createdDate: Calendar? = null,
 ) : IBase

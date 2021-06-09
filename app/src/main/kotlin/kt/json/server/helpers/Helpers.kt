@@ -1,13 +1,14 @@
 package kt.json.server
 
 import com.google.gson.Gson
-import com.google.gson.internal.LinkedTreeMap
 import com.google.gson.reflect.TypeToken
+import java.io.File
 import java.lang.reflect.Type
 import java.net.URLDecoder
-import kotlin.text.Regex.Companion.escapeReplacement
+import java.nio.charset.StandardCharsets
 
-class Operator (val operation: String, val value: String)
+
+class Operator(val operation: String, val value: String)
 
 object Helpers {
     //posts?title=foo&author=smith
@@ -23,7 +24,7 @@ object Helpers {
     }
 
     fun SearchHashMap(className:String, storageArray: ArrayList<Any>, mapSearchTerms: HashMap<String, Operator>): Any? {
-        var found: MutableList<Any> = ArrayList<Any>()
+        var found: MutableList<Any>? = ArrayList<Any>()
         loop@ for ((sKey, sOpValue) in mapSearchTerms) {
             when (sKey) {
                 //GET /posts?_sort=views&_order=asc
@@ -33,7 +34,7 @@ object Helpers {
                     var field = ""
                     var sortOrder = "desc"
                     for ((sKey2, sOpValue2) in mapSearchTerms) {
-                        logger.trace("------ _limit ------")
+                        logger.trace("------ _order ------")
                         when (sKey2) {
                             "_sort" -> {
                                 field = sOpValue2.value
@@ -42,14 +43,73 @@ object Helpers {
                                 sortOrder = sOpValue2.value
                             }
                         }
-                        found = storageArray
                         when (sortOrder) {
                             "desc" -> {
-                                found.sortByDescending { it.toString() }
+                                found?.sortByDescending { it.toString() }
                             }
                             "asc" -> {
-                                found.sortBy { it.toString() }
+                                found?.sortBy { it.toString() }
                             }
+                        }
+                    }
+                    val objType: Type? = GetObjectType(className)
+                    var contents = Gson().toJson(storageArray, objType)
+                    when (className) {
+                        Post::class.qualifiedName -> {
+                            var dynList = Gson().fromJson<ArrayList<Post>>(contents, objType)
+                            when (sortOrder) {
+                                "desc" -> {
+                                    when (field) {
+                                        "title" -> {
+                                            dynList.sortByDescending { it.title }
+                                        }
+                                        "author" -> {
+                                            dynList.sortByDescending { it.author }
+                                        }
+                                        "createdDate" -> {
+                                            dynList.sortByDescending { it.createdDate }
+                                        }
+                                    }
+                                }
+                                "asc" -> {
+                                    when (field) {
+                                        "title" -> {
+                                            dynList.sortBy { it.title }
+                                        }
+                                        "author" -> {
+                                            dynList.sortBy { it.author }
+                                        }
+                                        "createdDate" -> {
+                                            dynList.sortBy { it.createdDate }
+                                        }
+                                    }
+                                }
+                            }
+                            found = dynList as MutableList<Any>
+                        }
+                        Comment::class.qualifiedName -> {
+                            var dynList = Gson().fromJson<ArrayList<Comment>>(contents, objType)
+                            when (sortOrder) {
+                                "desc" -> {
+                                    dynList.sortByDescending { it.toString() }
+                                }
+                                "asc" -> {
+                                    dynList.sortBy { it.toString() }
+                                }
+                            }
+                            found = dynList as MutableList<Any>
+                        }
+                        Profile::class.qualifiedName -> {
+                            var dynList = Gson().fromJson<ArrayList<Profile>>(contents, objType)
+                            when (sortOrder) {
+                                "desc" -> {
+                                    dynList.sortByDescending { it.toString() }
+                                }
+                                "asc" -> {
+                                    dynList.sortBy { it.toString() }
+                                }
+                            }
+                            found = dynList as MutableList<Any>
                         }
                     }
                     break@loop
@@ -71,7 +131,11 @@ object Helpers {
                             }
                         }
                     }
-                    found = storageArray.subList(index, index+itemsPerPage)
+                    if (index > storageArray.size || index + itemsPerPage > storageArray.size) {
+                        found = null
+                    } else {
+                        found = storageArray.subList(index, index + itemsPerPage)
+                    }
                     break@loop
                 }
                 "_start" -> {
@@ -90,12 +154,12 @@ object Helpers {
                             it2.javaClass.kotlin.members.forEach { it3 ->
                                 if (it3.name == sKey) {
                                     var h = it3.call(it2)
-                                    val ss = URLDecoder.decode(sOpValue.value)
+                                    val ss = URLDecoder.decode(sOpValue.value, StandardCharsets.UTF_8)
                                     val op = sOpValue.operation
                                     when (op) {
                                         "=" -> {
                                             if (h.toString().equals(ss)) {
-                                                found.add(it2)
+                                                found?.add(it2)
                                             }
                                         }
                                     }
@@ -109,7 +173,7 @@ object Helpers {
         return found
     }
 
-    fun GetObjectType(className: String) : Type? {
+    fun GetObjectType(className: String): Type? {
         var objType: Type? = null
         when (className) {
             Post::class.qualifiedName -> {
@@ -124,5 +188,50 @@ object Helpers {
         }
         return objType
     }
+
+    fun initStorageMap(className: String) {
+        var filename = "${File("").absolutePath}/${className}.json"
+        println("Storage map file = $filename")
+
+        val gson = Gson()
+        var file = File(filename)
+        var fileExists = file.exists()
+        val objType: Type? = GetObjectType(className)
+        if (fileExists) {
+            var contents = file.readText()
+            globalStorageMap[className] = gson.fromJson(contents, objType)
+        } else {
+            println("$filename file does not exist.")
+
+            // iniialize storage for testing
+            globalStorageMap[className] = ArrayList<Any>()
+        }
+    }
+
+    fun saveStorageMap(className: String) {
+        var filename = "${File("").absolutePath}/${className}.json"
+        println("Storage map file = $filename")
+
+        val gson = Gson()
+        var file = File(filename)
+        var fileExists = file.exists()
+        var storage = globalStorageMap[className]
+        val objType: Type? = GetObjectType(className)
+        var contents = gson.toJson(storage, objType)
+        if (fileExists) {
+            file.writeText(contents)
+        } else {
+            // create a new file
+            val isNewFileCreated: Boolean = file.createNewFile()
+            if (isNewFileCreated) {
+                println("$filename is created successfully.")
+            } else {
+                println("$filename already exists.")
+            }
+            file.writeText(contents)
+        }
+    }
 }
+
+
 

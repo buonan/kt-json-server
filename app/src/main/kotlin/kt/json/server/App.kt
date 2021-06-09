@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory
 import kotlinx.serialization.json.*
 import java.io.File
 import com.google.gson.reflect.TypeToken
+import io.ktor.auth.*
 import java.lang.reflect.Type
 import java.util.*
 import kotlin.collections.HashMap
@@ -49,53 +50,9 @@ fun printRoutes() {
         println("Routes http://localhost:8000/${name}s")
 
         // initialize persistent storages
-        initStorageMap(it.name)
+        Helpers.initStorageMap(it.name)
     }
 }
-
-fun initStorageMap(className: String) {
-    var filename = "${File("").absolutePath}/${className}.json"
-    println("Storage map file = $filename")
-
-    val gson = Gson()
-    var file = File(filename)
-    var fileExists = file.exists()
-    val objType: Type? = Helpers.GetObjectType(className)
-    if (fileExists) {
-        var contents = file.readText()
-        globalStorageMap[className] = gson.fromJson(contents, objType)
-    } else {
-        println("$filename file does not exist.")
-
-        // iniialize storage for testing
-        globalStorageMap[className] = arrayListOf<Any>()
-    }
-}
-
-fun saveStorageMap(className: String) {
-    var filename = "${File("").absolutePath}/${className}.json"
-    println("Storage map file = $filename")
-
-    val gson = Gson()
-    var file = File(filename)
-    var fileExists = file.exists()
-    var storage = globalStorageMap[className]
-    val objType: Type? = Helpers.GetObjectType(className)
-    var contents = gson.toJson(storage, objType)
-    if (fileExists) {
-        file.writeText(contents)
-    } else {
-        // create a new file
-        val isNewFileCreated: Boolean = file.createNewFile()
-        if (isNewFileCreated) {
-            println("$filename is created successfully.")
-        } else {
-            println("$filename already exists.")
-        }
-        file.writeText(contents)
-    }
-}
-
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.main(testing: Boolean = false) {
     println(
@@ -118,8 +75,23 @@ fun Application.main(testing: Boolean = false) {
             isLenient = true
         })
     }
+    install(Authentication) {
+        basic("basic-auth") {
+            realm = "Access to the '/' path"
+            validate { credentials ->
+                if (credentials.name == "jetbrains" && credentials.password == "foobar") {
+                    UserIdPrincipal(credentials.name)
+                } else {
+                    null
+                }
+            }
+        }
+    }
     routing {
-        endpoints()
+        authenticate("basic-auth") {
+            protected()
+        }
+        public()
         health()
     }
 }
