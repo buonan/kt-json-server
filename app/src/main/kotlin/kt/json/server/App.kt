@@ -32,7 +32,7 @@ var globalStorageMap = HashMap<String, ArrayList<Any>>()
 class App {
     val greeting: String
         get() {
-            return "Hello World!"
+            return "app should have a greeting"
         }
 }
 
