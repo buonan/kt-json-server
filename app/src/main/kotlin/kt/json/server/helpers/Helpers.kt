@@ -10,6 +10,9 @@ import java.nio.charset.StandardCharsets
 
 class Operator(val operation: String, val value: String)
 
+inline fun <reified T : Any> Any.cast(): T {
+    return this as T
+}
 object Helpers {
     //posts?title=foo&author=smith
     fun ParamsSplit(qs: String): HashMap<String, Operator> {
@@ -52,11 +55,9 @@ object Helpers {
                             }
                         }
                     }
-                    val objType: Type? = GetObjectType(className)
-                    var contents = Gson().toJson(storageArray, objType)
                     when (className) {
                         Post::class.qualifiedName -> {
-                            var dynList = Gson().fromJson<ArrayList<Post>>(contents, objType)
+                            var dynList = storageArray.cast<ArrayList<Post>>()
                             when (sortOrder) {
                                 "desc" -> {
                                     when (field) {
@@ -85,10 +86,11 @@ object Helpers {
                                     }
                                 }
                             }
+                            @Suppress("UNCHECKED_CAST")
                             found = dynList as MutableList<Any>
                         }
                         Comment::class.qualifiedName -> {
-                            var dynList = Gson().fromJson<ArrayList<Comment>>(contents, objType)
+                            var dynList = storageArray.cast<ArrayList<Comment>>()
                             when (sortOrder) {
                                 "desc" -> {
                                     dynList.sortByDescending { it.toString() }
@@ -97,10 +99,11 @@ object Helpers {
                                     dynList.sortBy { it.toString() }
                                 }
                             }
+                            @Suppress("UNCHECKED_CAST")
                             found = dynList as MutableList<Any>
                         }
                         Profile::class.qualifiedName -> {
-                            var dynList = Gson().fromJson<ArrayList<Profile>>(contents, objType)
+                            var dynList = storageArray.cast<ArrayList<Profile>>()
                             when (sortOrder) {
                                 "desc" -> {
                                     dynList.sortByDescending { it.toString() }
@@ -109,6 +112,7 @@ object Helpers {
                                     dynList.sortBy { it.toString() }
                                 }
                             }
+                            @Suppress("UNCHECKED_CAST")
                             found = dynList as MutableList<Any>
                         }
                     }
