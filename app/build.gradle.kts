@@ -15,7 +15,7 @@ val compileTestKotlin: KotlinCompile by tasks
 
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.5.0"
+    id("org.jetbrains.kotlin.jvm") version "1.5.10"
 
     // Apply java plugin
     id("java")
@@ -45,7 +45,7 @@ compileTestKotlin.kotlinOptions {
 dependencies {
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.10")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$ktor_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
     implementation("org.reflections:reflections:0.9.12")
 
@@ -61,8 +61,8 @@ dependencies {
     //implementation("org.slf4j:slf4j-log4j12:1.7.29")
 
     // Use Ktor.io
-    implementation("io.ktor:ktor-server-core:1.5.4")
-    implementation("io.ktor:ktor-server-netty:1.5.4")
+    implementation("io.ktor:ktor-server-core:$ktor_version")
+    implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("ch.qos.logback:logback-classic:1.2.3")
 
     implementation("io.ktor:ktor-jackson:$ktor_version")
@@ -72,8 +72,8 @@ dependencies {
     implementation("io.ktor:ktor-auth:$ktor_version")
 
     // Use for ktor tests
-    testImplementation("io.ktor:ktor-server-test-host:1.5.4")
-    
+    testImplementation("io.ktor:ktor-server-test-host:$ktor_version")
+
     // Use the Kotlin test library.
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 

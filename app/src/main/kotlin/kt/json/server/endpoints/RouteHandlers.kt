@@ -1,19 +1,17 @@
 package kt.json.server
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
-import io.ktor.util.pipeline.*
-import com.google.gson.Gson
 import io.ktor.util.*
+import io.ktor.util.pipeline.*
 
-suspend fun handleGet(
-    app:
-    PipelineContext<Unit, ApplicationCall>, className: String
-) {
-    logger.trace("------ getPlural ------")
+suspend fun handleGet(app: PipelineContext<Unit, ApplicationCall>, className: String) {
+    logger.trace("------ handleGet ------")
     var storage = globalStorageMap[className]
     val json = Gson()
     var elJson = json.toJson(storage)
@@ -21,10 +19,11 @@ suspend fun handleGet(
 }
 
 suspend fun handleGetWithQueryString(
-    app:
-    PipelineContext<Unit, ApplicationCall>, queryString: String, className: String
+    app: PipelineContext<Unit, ApplicationCall>,
+    queryString: String,
+    className: String
 ) {
-    logger.trace("------ getPlural ------")
+    logger.trace("------ handleGetWithQueryString ------")
     var storage = globalStorageMap[className]
     val json = Gson()
     val pairs = Helpers.ParamsSplit(queryString)
@@ -37,12 +36,11 @@ suspend fun handleGetWithQueryString(
 }
 
 suspend fun handleGetById(
-    app:
-    PipelineContext<Unit, ApplicationCall>,
+    app: PipelineContext<Unit, ApplicationCall>,
     className: String,
     paramId: Int
 ) {
-    logger.trace("------ getSingular ------")
+    logger.trace("------ handleGetById ------")
     var storage = globalStorageMap[className]
     storage?.let {
         val json = Gson()
@@ -53,11 +51,10 @@ suspend fun handleGetById(
 }
 
 suspend fun handlePost(
-    app:
-    PipelineContext<Unit, ApplicationCall>,
+    app: PipelineContext<Unit, ApplicationCall>,
     className: String,
 ) {
-    logger.trace("------ postCreateSingular ------")
+    logger.trace("------ handlePost ------")
     var storage = globalStorageMap[className]
     storage.let {
         var obj = Class.forName(className).getDeclaredConstructor().newInstance()
@@ -74,12 +71,11 @@ suspend fun handlePost(
 }
 
 suspend fun handlePut(
-    app:
-    PipelineContext<Unit, ApplicationCall>,
+    app: PipelineContext<Unit, ApplicationCall>,
     className: String,
     paramId: Int
 ) {
-    logger.trace("------ updateSingular ------")
+    logger.trace("------ handlePut ------")
     var storage = globalStorageMap[className]
     storage?.let {
         var obj = Class.forName(className).getDeclaredConstructor().newInstance()
@@ -89,26 +85,32 @@ suspend fun handlePut(
         // Update
         it[paramId] = objMapped
         Helpers.saveStorageMap(className)
-        app.call.respondText(
-            "Update\n", ContentType.Text.Plain, status = HttpStatusCode.OK
-        )
+        app.call.respondText("Update\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
     }
 }
 
 suspend fun handleDelete(
-    app:
-    PipelineContext<Unit, ApplicationCall>,
+    app: PipelineContext<Unit, ApplicationCall>,
     className: String,
     paramId: Int
 ) {
-    logger.trace("------ deleteSingular ------")
+    logger.trace("------ handleDelete ------")
     var storage = globalStorageMap.get(className)
     storage?.let {
         // Delete
         it.removeAt(paramId)
         Helpers.saveStorageMap(className)
-        app.call.respondText(
-            "Delete\n", ContentType.Text.Plain, status = HttpStatusCode.OK
-        )
+        app.call.respondText("Delete\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
     }
+}
+
+suspend fun handleMeta(
+    app: PipelineContext<Unit, ApplicationCall>,
+    className: String,
+) {
+    logger.trace("------ handleMeta ------")
+    val json = GsonBuilder().setPrettyPrinting().serializeNulls().create()
+    var obj = Class.forName(className).getDeclaredConstructor().newInstance()
+    var elJSON = json.toJson(obj)
+    app.call.respond(elJSON)
 }

@@ -66,6 +66,14 @@ fun Route.public() {
                 call.respondText("Error: ${e.message}\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
             }
         }
+        // meta
+        get("/$route/_meta") {
+          try {
+              handleMeta(this, className)
+          } catch (e: Exception) {
+              call.respondText("Error: ${e.message}\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
+          }
+      }
     }
 }
 
