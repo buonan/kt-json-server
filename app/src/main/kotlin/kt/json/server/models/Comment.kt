@@ -7,5 +7,5 @@ data class Comment(
     var postId: Int? = null,
     var body: String? = null,
     var author: String? = null,
-    var createdDate: Calendar? = null,
+    var createdDate: Date? = null
 ) : IBase

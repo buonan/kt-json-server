@@ -58,10 +58,10 @@ fun Application.main(testing: Boolean = false) {
     println(
         "Trace=${logger.isTraceEnabled}, Debug=${logger.isDebugEnabled}, Info=${logger.isInfoEnabled}, Warn=${logger.isWarnEnabled}, Error=${logger.isErrorEnabled}"
     )
-    logger.info("------ INFO------")
-    logger.debug("------ DEBUG ------")
-    logger.error("------ ERROR ------")
-    logger.trace("------ TRACE ------")
+    logger.info("------ INFO enabled ------")
+    logger.debug("------ DEBUG enabled ------")
+    logger.error("------ ERROR enabled ------")
+    logger.trace("------ TRACE enabled ------")
     printRoutes()
     install(CORS) {
         anyHost()

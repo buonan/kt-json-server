@@ -65,7 +65,6 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("ch.qos.logback:logback-classic:1.2.3")
 
-    implementation("io.ktor:ktor-jackson:$ktor_version")
     implementation("io.ktor:ktor-locations:$ktor_version")
     implementation("io.ktor:ktor-metrics:$ktor_version")
     implementation("io.ktor:ktor-serialization:$ktor_version")

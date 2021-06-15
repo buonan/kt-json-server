@@ -6,5 +6,5 @@ data class Profile (
   override var id: Int? = null,
   var name: String? = null,
   var email: String? = null,
-  var createdDate: Calendar? = null,
+  var createdDate: Date? = null
   ) : IBase

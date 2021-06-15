@@ -1,14 +1,13 @@
 package kt.json.server
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.google.gson.*
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
-import io.ktor.util.*
 import io.ktor.util.pipeline.*
+
+const val DateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
 
 suspend fun handleGet(app: PipelineContext<Unit, ApplicationCall>, className: String) {
     logger.trace("------ handleGet ------")
@@ -57,10 +56,14 @@ suspend fun handlePost(
     logger.trace("------ handlePost ------")
     var storage = globalStorageMap[className]
     storage.let {
-        var obj = Class.forName(className).getDeclaredConstructor().newInstance()
-        var text = app.call.receiveText()
-        var mapper = ObjectMapper()
-        var objMapped = mapper.readValue(text, obj::class.java)
+        val obj = Class.forName(className).getDeclaredConstructor().newInstance()
+        val text = app.call.receiveText()
+        val gson =
+            GsonBuilder()
+                .serializeNulls()
+                .setDateFormat(DateFormat)
+                .create()
+        var objMapped = gson.fromJson(text, obj::class.java)
         var baseMapped = objMapped as IBase
         baseMapped.id = storage?.size!!
         // Create
@@ -80,8 +83,12 @@ suspend fun handlePut(
     storage?.let {
         var obj = Class.forName(className).getDeclaredConstructor().newInstance()
         var text = app.call.receiveText()
-        var mapper = ObjectMapper()
-        var objMapped = mapper.readValue(text, obj::class.java)
+        val gson =
+            GsonBuilder()
+                .serializeNulls()
+                .setDateFormat(DateFormat)
+                .create()
+        var objMapped = gson.fromJson(text, obj::class.java)
         // Update
         it[paramId] = objMapped
         Helpers.saveStorageMap(className)
