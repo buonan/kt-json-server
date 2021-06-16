@@ -61,6 +61,9 @@ object Helpers {
                             when (sortOrder) {
                                 "desc" -> {
                                     when (field) {
+                                        "id" -> {
+                                            dynList.sortByDescending { it.id }
+                                        }
                                         "title" -> {
                                             dynList.sortByDescending { it.title }
                                         }
@@ -74,6 +77,9 @@ object Helpers {
                                 }
                                 "asc" -> {
                                     when (field) {
+                                        "id" -> {
+                                            dynList.sortBy { it.id }
+                                        }
                                         "title" -> {
                                             dynList.sortBy { it.title }
                                         }
