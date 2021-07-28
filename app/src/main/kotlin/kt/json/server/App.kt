@@ -53,7 +53,9 @@ fun printRoutes() {
         Helpers.initStorageMap(it.name)
     }
 }
+
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+
 fun Application.main(testing: Boolean = false) {
     println(
         "Trace=${logger.isTraceEnabled}, Debug=${logger.isDebugEnabled}, Info=${logger.isInfoEnabled}, Warn=${logger.isWarnEnabled}, Error=${logger.isErrorEnabled}"

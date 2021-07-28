@@ -7,5 +7,5 @@ data class Post (
   var title: String? = null,
   var author: String? = null,
   var views: Number? = null,
-  var createdDate: Date? = null,
-  ) : IBase
+  var createdDate: Date? = Date()
+) : IBase

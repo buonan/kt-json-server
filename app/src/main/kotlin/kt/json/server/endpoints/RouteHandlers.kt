@@ -6,6 +6,9 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.pipeline.*
+import java.lang.reflect.Modifier.*
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.primaryConstructor
 
 const val DateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
 
@@ -118,6 +121,9 @@ suspend fun handleMeta(
     logger.trace("------ handleMeta ------")
     val json = GsonBuilder().setPrettyPrinting().serializeNulls().create()
     var obj = Class.forName(className).getDeclaredConstructor().newInstance()
+    for (prop in obj.javaClass.kotlin.memberProperties) {
+        println("${prop.name} = ${prop.get(obj)}")
+    }
     var elJSON = json.toJson(obj)
     app.call.respond(elJSON)
 }

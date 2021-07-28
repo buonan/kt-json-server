@@ -12,8 +12,8 @@ Inspiration from JSON Server [https://github.com/typicode/json-server](https://g
     * [Filter](#filter)
     * [Paginate](#paginate)
     * [Sort](#sort)
-    
-   
+
+
 - [Extras](#extras)
     * [Deployment](#deployment)
 
@@ -25,9 +25,13 @@ Inspiration from JSON Server [https://github.com/typicode/json-server](https://g
 
 Install Kotlin JSON Server
 
+## Start JSON Server
+
+gradlew run
+
 ## Routes
 
-Based on the files in the models folder, here are all the default routes. 
+Based on the files in the models folder, here are all the default routes.
 
 ### Routes
 

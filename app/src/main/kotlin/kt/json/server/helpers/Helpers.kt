@@ -6,6 +6,7 @@ import java.io.File
 import java.lang.reflect.Type
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
+import kotlin.reflect.full.memberProperties
 
 
 class Operator(val operation: String, val value: String)
@@ -13,6 +14,7 @@ class Operator(val operation: String, val value: String)
 inline fun <reified T : Any> Any.cast(): T {
     return this as T
 }
+
 object Helpers {
     //posts?title=foo&author=smith
     fun ParamsSplit(qs: String): HashMap<String, Operator> {
@@ -26,7 +28,11 @@ object Helpers {
         return pairs;
     }
 
-    fun SearchHashMap(className:String, storageArray: ArrayList<Any>, mapSearchTerms: HashMap<String, Operator>): Any? {
+    fun SearchHashMap(
+        className: String,
+        storageArray: ArrayList<Any>,
+        mapSearchTerms: HashMap<String, Operator>
+    ): Any? {
         var found: MutableList<Any>? = ArrayList<Any>()
         loop@ for ((sKey, sOpValue) in mapSearchTerms) {
             when (sKey) {
@@ -55,73 +61,22 @@ object Helpers {
                             }
                         }
                     }
-                    when (className) {
-                        Post::class.qualifiedName -> {
-                            var dynList = storageArray.cast<ArrayList<Post>>()
+                    var obj = Class.forName(className).getDeclaredConstructor().newInstance()
+                    var dynList = storageArray
+                    for (prop in obj.javaClass.kotlin.memberProperties) {
+                        if (prop.name == field) {
                             when (sortOrder) {
+                                // GET /posts?_sort=title&_order=asc
                                 "desc" -> {
-                                    when (field) {
-                                        "id" -> {
-                                            dynList.sortByDescending { it.id }
-                                        }
-                                        "title" -> {
-                                            dynList.sortByDescending { it.title }
-                                        }
-                                        "author" -> {
-                                            dynList.sortByDescending { it.author }
-                                        }
-                                        "createdDate" -> {
-                                            dynList.sortByDescending { it.createdDate }
-                                        }
-                                    }
+                                    dynList.sortByDescending { prop.get(it).toString() }
                                 }
                                 "asc" -> {
-                                    when (field) {
-                                        "id" -> {
-                                            dynList.sortBy { it.id }
-                                        }
-                                        "title" -> {
-                                            dynList.sortBy { it.title }
-                                        }
-                                        "author" -> {
-                                            dynList.sortBy { it.author }
-                                        }
-                                        "createdDate" -> {
-                                            dynList.sortBy { it.createdDate }
-                                        }
-                                    }
+                                    dynList.sortBy { prop.get(it).toString() }
                                 }
                             }
-                            @Suppress("UNCHECKED_CAST")
-                            found = dynList as MutableList<Any>
-                        }
-                        Comment::class.qualifiedName -> {
-                            var dynList = storageArray.cast<ArrayList<Comment>>()
-                            when (sortOrder) {
-                                "desc" -> {
-                                    dynList.sortByDescending { it.toString() }
-                                }
-                                "asc" -> {
-                                    dynList.sortBy { it.toString() }
-                                }
-                            }
-                            @Suppress("UNCHECKED_CAST")
-                            found = dynList as MutableList<Any>
-                        }
-                        Profile::class.qualifiedName -> {
-                            var dynList = storageArray.cast<ArrayList<Profile>>()
-                            when (sortOrder) {
-                                "desc" -> {
-                                    dynList.sortByDescending { it.toString() }
-                                }
-                                "asc" -> {
-                                    dynList.sortBy { it.toString() }
-                                }
-                            }
-                            @Suppress("UNCHECKED_CAST")
-                            found = dynList as MutableList<Any>
                         }
                     }
+                    found = dynList as MutableList<Any>
                     break@loop
                 }
                 //GET /posts?_page=7
