@@ -7,13 +7,9 @@ import java.lang.reflect.Type
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import kotlin.reflect.full.memberProperties
-
+import kt.json.server.FileAdapter
 
 class Operator(val operation: String, val value: String)
-
-inline fun <reified T : Any> Any.cast(): T {
-    return this as T
-}
 
 object Helpers {
     //posts?title=foo&author=smith
@@ -34,6 +30,7 @@ object Helpers {
         mapSearchTerms: HashMap<String, Operator>
     ): Any? {
         var found: MutableList<Any>? = ArrayList<Any>()
+        var dynList = storageArray
         loop@ for ((sKey, sOpValue) in mapSearchTerms) {
             when (sKey) {
                 //GET /posts?_sort=views&_order=asc
@@ -62,7 +59,6 @@ object Helpers {
                         }
                     }
                     var obj = Class.forName(className).getDeclaredConstructor().newInstance()
-                    var dynList = storageArray
                     for (prop in obj.javaClass.kotlin.memberProperties) {
                         if (prop.name == field) {
                             when (sortOrder) {
@@ -76,7 +72,7 @@ object Helpers {
                             }
                         }
                     }
-                    found = dynList as MutableList<Any>
+                    found = dynList
                     break@loop
                 }
                 //GET /posts?_page=7
@@ -96,10 +92,10 @@ object Helpers {
                             }
                         }
                     }
-                    if (index > storageArray.size || index + itemsPerPage > storageArray.size) {
+                    if (index > dynList.size || index + itemsPerPage > dynList.size) {
                         found = null
                     } else {
-                        found = storageArray.subList(index, index + itemsPerPage)
+                        found = dynList.subList(index, index + itemsPerPage)
                     }
                     break@loop
                 }
@@ -112,7 +108,7 @@ object Helpers {
                 }
                 else -> {
                     logger.trace("------ exact match ------")
-                    storageArray.let { it ->
+                    dynList.let { it ->
                         println("${it}")
                         it.forEach { it2 ->
                             println("${it2}")
@@ -123,7 +119,7 @@ object Helpers {
                                     val op = sOpValue.operation
                                     when (op) {
                                         "=" -> {
-                                            if (h.toString().equals(ss)) {
+                                            if (h.toString() == ss) {
                                                 found?.add(it2)
                                             }
                                         }
@@ -136,65 +132,6 @@ object Helpers {
             }
         }
         return found
-    }
-
-    fun GetObjectType(className: String): Type? {
-        var objType: Type? = null
-        when (className) {
-            Post::class.qualifiedName -> {
-                objType = object : TypeToken<java.util.ArrayList<Post>>() {}.type
-            }
-            Comment::class.qualifiedName -> {
-                objType = object : TypeToken<java.util.ArrayList<Comment>>() {}.type
-            }
-            Profile::class.qualifiedName -> {
-                objType = object : TypeToken<java.util.ArrayList<Profile>>() {}.type
-            }
-        }
-        return objType
-    }
-
-    fun initStorageMap(className: String) {
-        var filename = "${File("").absolutePath}/${className}.json"
-        println("Storage map file = $filename")
-
-        val gson = Gson()
-        var file = File(filename)
-        var fileExists = file.exists()
-        val objType: Type? = GetObjectType(className)
-        if (fileExists) {
-            var contents = file.readText()
-            globalStorageMap[className] = gson.fromJson(contents, objType)
-        } else {
-            println("$filename file does not exist.")
-
-            // iniialize storage for testing
-            globalStorageMap[className] = ArrayList<Any>()
-        }
-    }
-
-    fun saveStorageMap(className: String) {
-        var filename = "${File("").absolutePath}/${className}.json"
-        println("Storage map file = $filename")
-
-        val gson = Gson()
-        var file = File(filename)
-        var fileExists = file.exists()
-        var storage = globalStorageMap[className]
-        val objType: Type? = GetObjectType(className)
-        var contents = gson.toJson(storage, objType)
-        if (fileExists) {
-            file.writeText(contents)
-        } else {
-            // create a new file
-            val isNewFileCreated: Boolean = file.createNewFile()
-            if (isNewFileCreated) {
-                println("$filename is created successfully.")
-            } else {
-                println("$filename already exists.")
-            }
-            file.writeText(contents)
-        }
     }
 }
 

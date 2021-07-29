@@ -22,6 +22,7 @@ import io.ktor.auth.*
 import java.lang.reflect.Type
 import java.util.*
 import kotlin.collections.HashMap
+import kt.json.server.FileAdapter
 
 // Global logger
 val logger: Logger = LoggerFactory.getLogger("main.class")
@@ -50,7 +51,7 @@ fun printRoutes() {
         println("Routes http://localhost:8000/${name}s")
 
         // initialize persistent storages
-        Helpers.initStorageMap(it.name)
+        FileAdapter.initStorageMap(it.name)
     }
 }
 

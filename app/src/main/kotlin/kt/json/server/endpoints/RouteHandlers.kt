@@ -71,7 +71,7 @@ suspend fun handlePost(
         baseMapped.id = storage?.size!!
         // Create
         it?.add(baseMapped)
-        Helpers.saveStorageMap(className)
+        FileAdapter.saveStorageMap(className)
         app.call.respondText("Create", status = HttpStatusCode.OK)
     }
 }
@@ -94,7 +94,7 @@ suspend fun handlePut(
         var objMapped = gson.fromJson(text, obj::class.java)
         // Update
         it[paramId] = objMapped
-        Helpers.saveStorageMap(className)
+        FileAdapter.saveStorageMap(className)
         app.call.respondText("Update\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
     }
 }
@@ -109,7 +109,7 @@ suspend fun handleDelete(
     storage?.let {
         // Delete
         it.removeAt(paramId)
-        Helpers.saveStorageMap(className)
+        FileAdapter.saveStorageMap(className)
         app.call.respondText("Delete\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
     }
 }
