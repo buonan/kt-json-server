@@ -2,7 +2,7 @@ package kt.json.server
 
 import java.util.*
 
-data class Profile (
+data class User (
   override var id: Int? = null,
   var name: String? = null,
   var email: String? = null,

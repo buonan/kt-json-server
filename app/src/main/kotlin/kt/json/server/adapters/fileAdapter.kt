@@ -5,10 +5,6 @@ import com.google.gson.reflect.TypeToken
 import java.io.File
 import java.lang.reflect.Type
 
-inline fun <reified T : Any> Any.cast(): T {
-    return this as T
-}
-
 object FileAdapter {
     fun GetObjectType(className: String): Type? {
         val obj = Class.forName(className).getDeclaredConstructor().newInstance()

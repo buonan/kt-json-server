@@ -2,28 +2,13 @@ package kt.json.server
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kt.json.server.Comment
-import kt.json.server.Post
-import kt.json.server.Profile
-import kt.json.server.globalStorageMap
 import java.io.File
 import java.lang.reflect.Type
 
 object MongoDbAdapter {
     fun GetObjectType(className: String): Type? {
-        var objType: Type? = null
-        when (className) {
-            Post::class.qualifiedName -> {
-                objType = object : TypeToken<java.util.ArrayList<Post>>() {}.type
-            }
-            Comment::class.qualifiedName -> {
-                objType = object : TypeToken<java.util.ArrayList<Comment>>() {}.type
-            }
-            Profile::class.qualifiedName -> {
-                objType = object : TypeToken<java.util.ArrayList<Profile>>() {}.type
-            }
-        }
-        return objType
+        val obj = Class.forName(className).getDeclaredConstructor().newInstance()
+        return TypeToken.getParameterized(ArrayList::class.java, obj::class.java).type
     }
 
     fun initStorageMap(className: String) {

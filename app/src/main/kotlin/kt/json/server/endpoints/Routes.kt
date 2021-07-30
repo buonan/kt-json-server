@@ -77,6 +77,9 @@ fun Route.public() {
     }
 }
 
+/*
+    curl -i 'localhost:8000/protected' -u 'jetbrains:foobar'
+ */
 fun Route.protected() {
     // get plural
     get("/protected") {
