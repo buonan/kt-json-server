@@ -6,9 +6,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.pipeline.*
-import java.lang.reflect.Modifier.*
 import kotlin.reflect.full.memberProperties
-import kotlin.reflect.full.primaryConstructor
 
 const val DateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
 
@@ -16,6 +14,10 @@ suspend fun handleGet(app: PipelineContext<Unit, ApplicationCall>, className: St
     logger.trace("------ handleGet ------")
     var storage = globalStorageMap[className]
     val json = Gson()
+    var count = 0
+    storage?.forEach {
+        (it as IBase).id = count++
+    }
     var elJson = json.toJson(storage)
     storage.let { app.call.respondText(elJson) }
 }
