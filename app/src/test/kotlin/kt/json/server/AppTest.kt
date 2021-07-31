@@ -6,8 +6,11 @@ package kt.json.server
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import org.junit.FixMethodOrder
+import org.junit.runners.MethodSorters
 import kotlin.test.*
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class AppTest {
     @Test
     fun testAppHasAGreeting() {
@@ -24,6 +27,9 @@ class AppTest {
             assertEquals(HttpStatusCode.OK, response.status())
             assertEquals("Created", response.content)
         }
+        with(handleRequest(HttpMethod.Get, "/comments/0")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
     }
 
     @Test
@@ -35,9 +41,6 @@ class AppTest {
             assertEquals(HttpStatusCode.OK, response.status())
         }
         with(handleRequest(HttpMethod.Get, "/comments")) {
-            assertEquals(HttpStatusCode.OK, response.status())
-        }
-        with(handleRequest(HttpMethod.Get, "/comments/1")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
         with(handleRequest(HttpMethod.Get, "/comments?_page=1&_limit=10")) {
