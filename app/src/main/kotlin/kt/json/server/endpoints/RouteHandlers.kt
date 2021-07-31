@@ -14,10 +14,6 @@ suspend fun handleGet(app: PipelineContext<Unit, ApplicationCall>, className: St
     logger.trace("------ handleGet ------")
     var storage = globalStorageMap[className]
     val json = Gson()
-    var count = 0
-    storage?.forEach {
-        (it as IBase).id = count++
-    }
     var elJson = json.toJson(storage)
     storage.let { app.call.respondText(elJson) }
 }
@@ -74,7 +70,7 @@ suspend fun handlePost(
         // Create
         it?.add(baseMapped)
         FileAdapter.saveStorageMap(className)
-        app.call.respondText("Create", status = HttpStatusCode.OK)
+        app.call.respondText("Created", status = HttpStatusCode.OK)
     }
 }
 
@@ -97,7 +93,7 @@ suspend fun handlePut(
         // Update
         it[paramId] = objMapped
         FileAdapter.saveStorageMap(className)
-        app.call.respondText("Update\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
+        app.call.respondText("Updated\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
     }
 }
 
@@ -112,7 +108,7 @@ suspend fun handleDelete(
         // Delete
         it.removeAt(paramId)
         FileAdapter.saveStorageMap(className)
-        app.call.respondText("Delete\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
+        app.call.respondText("Deleted\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
     }
 }
 

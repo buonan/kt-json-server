@@ -3,17 +3,10 @@
  */
 package kt.json.server
 
+import io.ktor.application.*
+import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlin.test.*
-
-import io.ktor.application.*
-import io.ktor.features.*
-import io.ktor.http.*
-import io.ktor.response.*
-import io.ktor.routing.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.sessions.*
 
 class AppTest {
     @Test
@@ -23,25 +16,38 @@ class AppTest {
     }
 
     @Test
-    fun testRequests() =
-        withTestApplication(Application::main) {
-            with(handleRequest(HttpMethod.Get, "/posts")) {
-                assertEquals(HttpStatusCode.OK, response.status())
-            }
-            with(handleRequest(HttpMethod.Get, "/posts?_sort=views&_order=asc")) {
-                assertEquals(HttpStatusCode.OK, response.status())
-            }
-            with(handleRequest(HttpMethod.Get, "/comments")) {
-                assertEquals(HttpStatusCode.OK, response.status())
-            }
-            with(handleRequest(HttpMethod.Get, "/comments?_page=1&_limit=10")) {
-                assertEquals(HttpStatusCode.OK, response.status())
-            }
-            with(handleRequest(HttpMethod.Get, "/profiles")) {
-                assertEquals(HttpStatusCode.OK, response.status())
-            }
-            with(handleRequest(HttpMethod.Get, "/health")) {
-                assertEquals(HttpStatusCode.OK, response.status())
-            }
+    fun testPostRequests() = withTestApplication(Application::main) {
+        with(handleRequest(HttpMethod.Post, "/comments") {
+            // Add headers/body
+            setBody("{'body':'Some body', 'author':'Bob'}")
+        }) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            assertEquals("Created", response.content)
         }
+    }
+
+    @Test
+    fun testGetRequests() = withTestApplication(Application::main) {
+        with(handleRequest(HttpMethod.Get, "/posts")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
+        with(handleRequest(HttpMethod.Get, "/posts?_sort=views&_order=asc")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
+        with(handleRequest(HttpMethod.Get, "/comments")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
+        with(handleRequest(HttpMethod.Get, "/comments/1")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
+        with(handleRequest(HttpMethod.Get, "/comments?_page=1&_limit=10")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
+        with(handleRequest(HttpMethod.Get, "/users")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
+        with(handleRequest(HttpMethod.Get, "/health")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
+    }
 }
