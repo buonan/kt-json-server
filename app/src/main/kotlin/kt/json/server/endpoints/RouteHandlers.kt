@@ -12,7 +12,7 @@ const val DateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
 
 suspend fun handleGet(app: PipelineContext<Unit, ApplicationCall>, className: String) {
     logger.trace("------ handleGet ------")
-    var storage = globalStorageMap[className]
+    var storage = dataAdapter?.Storage?.get(className)
     val json = Gson()
     var elJson = json.toJson(storage)
     storage.let { app.call.respondText(elJson) }
@@ -24,7 +24,7 @@ suspend fun handleGetWithQueryString(
     className: String
 ) {
     logger.trace("------ handleGetWithQueryString ------")
-    var storage = globalStorageMap[className]
+    var storage = dataAdapter?.Storage?.get(className)
     val json = Gson()
     val pairs = Helpers.ParamsSplit(queryString)
     storage?.let {
@@ -41,7 +41,7 @@ suspend fun handleGetById(
     paramId: Int
 ) {
     logger.trace("------ handleGetById ------")
-    var storage = globalStorageMap[className]
+    var storage = dataAdapter?.Storage?.get(className)
     storage?.let {
         val json = Gson()
         var element = it[paramId]
@@ -55,7 +55,7 @@ suspend fun handlePost(
     className: String,
 ) {
     logger.trace("------ handlePost ------")
-    var storage = globalStorageMap[className]
+    var storage = dataAdapter?.Storage?.get(className)
     storage.let {
         val obj = Class.forName(className).getDeclaredConstructor().newInstance()
         val text = app.call.receiveText()
@@ -80,7 +80,7 @@ suspend fun handlePut(
     paramId: Int
 ) {
     logger.trace("------ handlePut ------")
-    var storage = globalStorageMap[className]
+    var storage = dataAdapter?.Storage?.get(className)
     storage?.let {
         var obj = Class.forName(className).getDeclaredConstructor().newInstance()
         var text = app.call.receiveText()
@@ -103,7 +103,7 @@ suspend fun handleDelete(
     paramId: Int
 ) {
     logger.trace("------ handleDelete ------")
-    var storage = globalStorageMap.get(className)
+    var storage = dataAdapter?.Storage?.get(className)
     storage?.let {
         // Delete
         it.removeAt(paramId)

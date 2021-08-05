@@ -3,9 +3,6 @@
  */
 package kt.json.server
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.gson.Gson
-import com.google.gson.internal.LinkedTreeMap
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.routing.*
@@ -16,19 +13,14 @@ import org.reflections.util.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import kotlinx.serialization.json.*
-import java.io.File
-import com.google.gson.reflect.TypeToken
 import io.ktor.auth.*
-import java.lang.reflect.Type
 import java.util.*
-import kotlin.collections.HashMap
-import kt.json.server.FileAdapter
 
 // Global logger
 val logger: Logger = LoggerFactory.getLogger("main.class")
 
-// Storage for testing
-var globalStorageMap = HashMap<String, ArrayList<Any>>()
+// Switch DataAdapters here
+val dataAdapter: BaseAdapter = FileAdapter
 
 class App {
     val greeting: String
@@ -51,7 +43,7 @@ fun printRoutes() {
         println("Routes http://localhost:8000/${name}s")
 
         // initialize persistent storages
-        FileAdapter.initStorageMap(it.name)
+        dataAdapter.initStorageMap(it.name)
     }
 }
 
