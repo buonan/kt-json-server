@@ -19,7 +19,7 @@ import java.util.*
 // Global logger
 val logger: Logger = LoggerFactory.getLogger("main.class")
 
-// Switch DataAdapters here
+// Change DataAdapters here
 val dataAdapter: BaseAdapter = FileAdapter
 
 class App {
