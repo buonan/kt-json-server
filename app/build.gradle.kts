@@ -70,6 +70,9 @@ dependencies {
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-auth:$ktor_version")
 
+    // Use for MongoDB
+    implementation("org.litote.kmongo:kmongo:4.2.7")
+
     // Use for ktor tests
     testImplementation("io.ktor:ktor-server-test-host:$ktor_version")
 

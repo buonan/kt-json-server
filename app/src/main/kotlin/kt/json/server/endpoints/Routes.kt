@@ -19,7 +19,7 @@ fun Route.public() {
         )
     reflections.getSubTypesOf(IBase::class.java).forEach { it ->
         // make routes plural /posts, /comments etc
-        var route = "${it.name.split('.').last().lowercase(Locale.getDefault())}s"
+        var route = "${it.name.split('.').last().lowercase(Locale.getDefault())}"
         val className = it.name
 
         // get plural

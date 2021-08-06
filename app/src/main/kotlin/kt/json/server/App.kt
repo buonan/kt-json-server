@@ -20,7 +20,7 @@ import java.util.*
 val logger: Logger = LoggerFactory.getLogger("main.class")
 
 // Change DataAdapters here
-val dataAdapter: BaseAdapter = FileAdapter
+val dataAdapter: BaseAdapter = MongoDbAdapter
 
 class App {
     val greeting: String
@@ -40,7 +40,7 @@ fun printRoutes() {
     reflections.getSubTypesOf(IBase::class.java).forEach { it ->
         var name = it.name.split('.').last().lowercase(Locale.getDefault())
         // print routes
-        println("Routes http://localhost:8000/${name}s")
+        println("Routes http://localhost:8000/${name}")
 
         // initialize persistent storages
         dataAdapter.initStorageMap(it.name)

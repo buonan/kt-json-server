@@ -2,7 +2,7 @@ package kt.json.server
 
 import java.util.*
 
-data class Post (
+data class Posts (
   override var id: Int? = null,
   var title: String? = null,
   var author: String? = null,

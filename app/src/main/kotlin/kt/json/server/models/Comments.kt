@@ -2,7 +2,7 @@ package kt.json.server
 
 import java.util.*
 
-data class Comment(
+data class Comments (
     override var id: Int? = 0,
     var postId: Int? = 0,
     var body: String? = null,
