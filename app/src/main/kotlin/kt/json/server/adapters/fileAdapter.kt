@@ -1,7 +1,9 @@
 package kt.json.server
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import io.ktor.http.*
 import java.io.File
 import java.lang.reflect.Type
 import java.net.URLDecoder
@@ -138,7 +140,6 @@ object FileAdapter : BaseAdapter() {
                 }
                 "_gte" -> {
                     logger.trace("------ _gte ------")
-
                 }
                 else -> {
                     logger.trace("------ exact match ------")
@@ -184,7 +185,21 @@ object FileAdapter : BaseAdapter() {
     }
 
     override fun Post(className: String, body: String) {
-
+        var storage = dataAdapter.Storage?.get(className)
+        storage.let {
+            val obj = Class.forName(className).getDeclaredConstructor().newInstance()
+            val gson =
+                GsonBuilder()
+                    .serializeNulls()
+                    .setDateFormat(DateFormat)
+                    .create()
+            var objMapped = gson.fromJson(body, obj::class.java)
+            var baseMapped = objMapped as IBase
+            baseMapped.id = Helpers.shortUUID()
+            // Create
+            it?.add(baseMapped)
+            dataAdapter.saveStorageMap(className)
+        }
     }
 
     override fun Put(className: String, body: String) {

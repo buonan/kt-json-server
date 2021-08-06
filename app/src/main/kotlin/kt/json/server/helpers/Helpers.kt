@@ -1,5 +1,9 @@
 package kt.json.server
 
+import java.nio.ByteBuffer
+import java.util.*
+
+
 class Operator(val operation: String, val value: String)
 
 object Helpers {
@@ -13,6 +17,11 @@ object Helpers {
             pairs.put(sp[0], Operator("=", sp[1]))
         }
         return pairs;
+    }
+    fun shortUUID(): String? {
+        val uuid = UUID.randomUUID()
+        val l: Long = ByteBuffer.wrap(uuid.toString().toByteArray()).getLong()
+        return java.lang.Long.toString(l, Character.MAX_RADIX)
     }
 }
 

@@ -3,8 +3,8 @@ package kt.json.server
 import java.util.*
 
 data class Comments (
-    override var id: Int? = 0,
-    var postId: Int? = 0,
+    override var id: String? = null,
+    var postId: String? = null,
     var body: String? = null,
     var author: String? = null,
     var createdDate: Date? = Date()

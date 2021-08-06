@@ -1,7 +1,9 @@
 package kt.json.server
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import org.bson.Document
 import java.lang.reflect.Type
 import org.litote.kmongo.*
 
@@ -37,8 +39,9 @@ object MongoDbAdapter : BaseAdapter() {
     }
 
     override fun GetAll(className: String): String? {
-        val col = db.getCollection(className)
-        return col.json
+        val coll = db.getCollection(className)
+        val data = coll.find().toList().json
+        return data
     }
 
     override fun GetById(className: String, id: Int): String? {
@@ -50,7 +53,9 @@ object MongoDbAdapter : BaseAdapter() {
     }
 
     override fun Post(className: String, body: String) {
-
+        val col = db.getCollection(className)
+        var document: Document = Document.parse(body)
+        col.insertOne(document)
     }
 
     override fun Put(className: String, body: String) {

@@ -55,23 +55,8 @@ suspend fun handlePost(
     className: String,
 ) {
     logger.trace("------ handlePost ------")
-    var storage = dataAdapter.Storage?.get(className)
-    storage.let {
-        val obj = Class.forName(className).getDeclaredConstructor().newInstance()
-        val text = app.call.receiveText()
-        val gson =
-            GsonBuilder()
-                .serializeNulls()
-                .setDateFormat(DateFormat)
-                .create()
-        var objMapped = gson.fromJson(text, obj::class.java)
-        var baseMapped = objMapped as IBase
-        baseMapped.id = storage?.size!!
-        // Create
-        it?.add(baseMapped)
-        dataAdapter.saveStorageMap(className)
-        app.call.respondText("Created", status = HttpStatusCode.OK)
-    }
+    dataAdapter.Post(className,  app.call.receiveText())
+    app.call.respondText("Created", status = HttpStatusCode.OK)
 }
 
 suspend fun handlePut(
