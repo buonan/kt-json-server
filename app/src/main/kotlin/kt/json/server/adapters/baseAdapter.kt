@@ -13,9 +13,9 @@ abstract class BaseAdapter {
     ): Any?
 
     abstract fun GetAll(className:String): String?
-    abstract fun GetById(className:String, id: Int): String?
+    abstract fun GetById(className:String, id: String): String?
     abstract fun GetWithQueryString(className:String, query: String): String?
-    abstract fun Post(className:String, body: String)
+    abstract fun Post(className:String, body: String): String?
     abstract fun Put(className:String, body: String)
     abstract fun DeleteAll(className:String)
     abstract fun DeleteById(className:String, id: Int)

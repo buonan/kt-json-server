@@ -3,18 +3,20 @@ package kt.json.server
 import com.google.gson.*
 import io.ktor.application.*
 import io.ktor.http.*
+import io.ktor.http.ContentType.Application.Json
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.pipeline.*
+import org.litote.kmongo.json
 import kotlin.reflect.full.memberProperties
 
 const val DateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
 
 suspend fun handleGet(app: PipelineContext<Unit, ApplicationCall>, className: String) {
     logger.trace("------ handleGet ------")
-    var data = dataAdapter.GetAll(className)
-    data?.let {
-        app.call.respondText(it)
+    var text = dataAdapter.GetAll(className)
+    text?.let {
+        app.call.respondText(it, Json)
     }
 }
 
@@ -30,23 +32,20 @@ suspend fun handleGetWithQueryString(
     storage?.let {
         val results = dataAdapter.SearchHashMap(className, pairs)
         // search with query string params
-        var elJson = json.toJson(results)
-        storage.let { app.call.respondText(elJson) }
+        var text = json.toJson(results)
+        app.call.respondText(text, Json)
     }
 }
 
 suspend fun handleGetById(
     app: PipelineContext<Unit, ApplicationCall>,
     className: String,
-    paramId: Int
+    paramId: String
 ) {
     logger.trace("------ handleGetById ------")
-    var storage = dataAdapter.Storage?.get(className)
-    storage?.let {
-        val json = Gson()
-        var element = it[paramId]
-        var elJSON = json.toJson(element)
-        app.call.respond(elJSON)
+    var text = dataAdapter.GetById(className, paramId)
+    text?.let {
+        app.call.respondText(it, Json)
     }
 }
 
@@ -55,8 +54,8 @@ suspend fun handlePost(
     className: String,
 ) {
     logger.trace("------ handlePost ------")
-    dataAdapter.Post(className,  app.call.receiveText())
-    app.call.respondText("Created", status = HttpStatusCode.OK)
+    var text = dataAdapter.Post(className,  app.call.receiveText())
+    app.call.respondText(text!!, status = HttpStatusCode.OK)
 }
 
 suspend fun handlePut(

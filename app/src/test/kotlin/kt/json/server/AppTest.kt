@@ -22,12 +22,12 @@ class AppTest {
     fun testPostRequests() = withTestApplication(Application::main) {
         with(handleRequest(HttpMethod.Post, "/comments") {
             // Add headers/body
-            setBody("{'body':'Some body', 'author':'Bob'}")
+            setBody("{'body':'Testing body', 'author':'Bob'}")
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals("Created", response.content)
+            assertNotNull(response.content)
         }
-        with(handleRequest(HttpMethod.Get, "/comments/0")) {
+        with(handleRequest(HttpMethod.Get, "/comments")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
     }

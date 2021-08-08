@@ -3,7 +3,9 @@ package kt.json.server
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import io.ktor.application.*
 import io.ktor.http.*
+import io.ktor.response.*
 import java.io.File
 import java.lang.reflect.Type
 import java.net.URLDecoder
@@ -170,22 +172,41 @@ object FileAdapter : BaseAdapter() {
     }
 
     override fun GetAll(className: String): String? {
-        var storage = Storage?.get(className)
+        var storage = Storage[className]
         val json = Gson()
         var data = json.toJson(storage)
         return data
     }
 
-    override fun GetById(className: String, id: Int): String? {
-        return null
+    override fun GetById(className: String, id: String): String? {
+        var storage = Storage[className]
+        var data: String? = null
+        storage?.let {
+            val json = Gson()
+            var element: Any? = null
+            loop@ for (item in it) {
+                for (prop in item.javaClass.kotlin.memberProperties) {
+                    if (prop.name == "id") {
+                        logger.info("${prop.get(item)}")
+                        if (prop.get(item).toString() == id) {
+                            element = item
+                            break@loop
+                        }
+                    }
+                }
+            }
+            data = json.toJson(element)
+        }
+        return data
     }
 
     override fun GetWithQueryString(className: String, query: String): String? {
         return null
     }
 
-    override fun Post(className: String, body: String) {
-        var storage = dataAdapter.Storage?.get(className)
+    override fun Post(className: String, body: String): String? {
+        var storage = Storage[className]
+        var data: String? = null
         storage.let {
             val obj = Class.forName(className).getDeclaredConstructor().newInstance()
             val gson =
@@ -199,7 +220,9 @@ object FileAdapter : BaseAdapter() {
             // Create
             it?.add(baseMapped)
             dataAdapter.saveStorageMap(className)
+            data = gson.toJson(objMapped)
         }
+        return data
     }
 
     override fun Put(className: String, body: String) {

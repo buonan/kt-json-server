@@ -37,7 +37,7 @@ fun Route.public() {
         // get singular
         get("/$route/{id}") {
             try {
-                handleGetById(this, className, call.parameters["id"]!!.toInt())
+                handleGetById(this, className, call.parameters["id"]!!.toString())
             } catch (e: Exception) {
                 call.respondText("Error ${e.message}\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
             }

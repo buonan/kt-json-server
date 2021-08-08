@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import org.bson.Document
+import org.bson.types.ObjectId
 import java.lang.reflect.Type
 import org.litote.kmongo.*
 
@@ -44,18 +45,21 @@ object MongoDbAdapter : BaseAdapter() {
         return data
     }
 
-    override fun GetById(className: String, id: Int): String? {
-        return null
+    override fun GetById(className: String, id: String): String? {
+        val coll = db.getCollection(className)
+        val data = coll.findOneById(ObjectId(id))?.toJson()
+        return data
     }
 
     override fun GetWithQueryString(className: String, query: String): String? {
         return null
     }
 
-    override fun Post(className: String, body: String) {
+    override fun Post(className: String, body: String): String? {
         val col = db.getCollection(className)
         var document: Document = Document.parse(body)
         col.insertOne(document)
+        return document.toJson()
     }
 
     override fun Put(className: String, body: String) {
