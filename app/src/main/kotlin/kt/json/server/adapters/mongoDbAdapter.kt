@@ -41,9 +41,9 @@ object MongoDbAdapter : BaseAdapter() {
         className: String,
         mapSearchTerms: HashMap<String, Operator>
     ): Any? {
-        var found: List<Document>? = null
-        var dynList: List<Document>? = listOf<Document>()
         val coll = db?.getCollection(className)
+        var found: MutableList<Document>? = ArrayList<Document>()
+        var dynList = coll?.find()?.toMutableList<Document>()
         loop@ for ((sKey, sOpValue) in mapSearchTerms) {
             when (sKey) {
                 //GET /posts?_sort=views&_order=asc
@@ -64,10 +64,10 @@ object MongoDbAdapter : BaseAdapter() {
                         }
                         when (sortOrder) {
                             "desc" -> {
-                                //found?.sortByDescending { it.toString() }
+                                found?.sortByDescending { it.toString() }
                             }
                             "asc" -> {
-                                //found?.sortBy { it.toString() }
+                                found?.sortBy { it.toString() }
                             }
                         }
                     }
@@ -77,10 +77,10 @@ object MongoDbAdapter : BaseAdapter() {
                             when (sortOrder) {
                                 // GET /posts?_sort=title&_order=asc
                                 "desc" -> {
-                                    dynList = coll?.find()?.toList()
+                                    dynList = coll?.find()?.toMutableList()
                                 }
                                 "asc" -> {
-                                    dynList = coll?.find()?.toList()
+                                    dynList = coll?.find()?.toMutableList()
                                 }
                             }
                         }
