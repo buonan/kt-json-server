@@ -19,8 +19,8 @@ import java.util.*
 // Global logger
 val logger: Logger = LoggerFactory.getLogger("main.class")
 
-// Change DataAdapters here
-val dataAdapter: BaseAdapter = MongoDbAdapter
+// Global Endpoint adapters here
+val EndpointAdapter: BaseAdapter = FileAdapter
 
 class App {
     val greeting: String
@@ -43,7 +43,7 @@ fun printRoutes() {
         println("Routes http://localhost:8000/${name}")
 
         // initialize persistent storages
-        dataAdapter.InitStorage(it.name)
+        EndpointAdapter.InitStorage(it.name)
     }
 }
 

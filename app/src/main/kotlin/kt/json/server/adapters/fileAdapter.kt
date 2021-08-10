@@ -210,7 +210,7 @@ object FileAdapter : BaseAdapter() {
         val json = Gson()
         var data: String? = null
         storage?.let {
-            val results = dataAdapter.Search(className, pairs)
+            val results = EndpointAdapter.Search(className, pairs)
             // search with query string params
             data = json.toJson(results)
         }
@@ -232,7 +232,7 @@ object FileAdapter : BaseAdapter() {
             baseMapped.id = Helpers.shortUUID()
             // Create
             it?.add(baseMapped)
-            dataAdapter.SaveStorage(className)
+            EndpointAdapter.SaveStorage(className)
             data = gson.toJson(objMapped)
         }
         return data
@@ -252,7 +252,7 @@ object FileAdapter : BaseAdapter() {
             var objMapped = gson.fromJson(body, obj::class.java)
             // Update
             it[id] = objMapped
-            dataAdapter.SaveStorage(className)
+            EndpointAdapter.SaveStorage(className)
             data = gson.toJson(objMapped)
 
         }

@@ -7,6 +7,6 @@ import io.ktor.http.*
 
 fun Route.health() {
   get("/health") {
-    call.respondText("It's healthy: ${dataAdapter.IsHealthy()}!\n", ContentType.Text.Plain, HttpStatusCode.OK)
+    call.respondText("It's healthy: ${EndpointAdapter.IsHealthy()}!\n", ContentType.Text.Plain, HttpStatusCode.OK)
   }
 }
