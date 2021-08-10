@@ -77,10 +77,10 @@ object MongoDbAdapter : BaseAdapter() {
                             when (sortOrder) {
                                 // GET /posts?_sort=title&_order=asc
                                 "desc" -> {
-                                    dynList = coll?.find()?.toMutableList()
+                                    dynList?.sortByDescending { prop.get(it).toString() }
                                 }
                                 "asc" -> {
-                                    dynList = coll?.find()?.toMutableList()
+                                    dynList?.sortBy { prop.get(it).toString() }
                                 }
                             }
                         }
