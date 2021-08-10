@@ -53,7 +53,7 @@ fun Route.public() {
         // update singular
         put("/$route/{id}") {
             try {
-                handlePut(this, className, call.parameters["id"]!!.toInt())
+                handlePut(this, className, call.parameters["id"]!!)
             } catch (e: Exception) {
                 call.respondText("Error: ${e.message}\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
             }
@@ -61,7 +61,7 @@ fun Route.public() {
         // delete singular
         delete("/$route/{id}") {
             try {
-                handleDelete(this, className, call.parameters["id"]!!.toInt())
+                handleDelete(this, className, call.parameters["id"]!!)
             } catch (e: Exception) {
                 call.respondText("Error: ${e.message}\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
             }

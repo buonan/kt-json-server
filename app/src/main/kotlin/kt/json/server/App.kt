@@ -43,7 +43,7 @@ fun printRoutes() {
         println("Routes http://localhost:8000/${name}")
 
         // initialize persistent storages
-        dataAdapter.initStorageMap(it.name)
+        dataAdapter.InitStorage(it.name)
     }
 }
 

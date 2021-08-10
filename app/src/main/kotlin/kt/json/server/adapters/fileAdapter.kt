@@ -4,8 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.request.*
 import java.io.File
 import java.lang.reflect.Type
 import java.net.URLDecoder
@@ -13,14 +12,14 @@ import java.nio.charset.StandardCharsets
 import kotlin.reflect.full.memberProperties
 
 object FileAdapter : BaseAdapter() {
-    override var Storage = HashMap<String, java.util.ArrayList<Any>>()
+    var Storage = HashMap<String, java.util.ArrayList<Any>>()
 
     override fun GetObjectType(className: String): Type? {
         val obj = Class.forName(className).getDeclaredConstructor().newInstance()
         return TypeToken.getParameterized(ArrayList::class.java, obj::class.java).type
     }
 
-    override fun initStorageMap(className: String) {
+    override fun InitStorage(className: String) {
         var filename = "${File("").absolutePath}/${className}.json"
         println("Storage map file = $filename")
 
@@ -39,7 +38,7 @@ object FileAdapter : BaseAdapter() {
         }
     }
 
-    override fun saveStorageMap(className: String) {
+    override fun SaveStorage(className: String) {
         var filename = "${File("").absolutePath}/${className}.json"
         println("Storage map file = $filename")
 
@@ -63,7 +62,11 @@ object FileAdapter : BaseAdapter() {
         }
     }
 
-    override fun SearchHashMap(
+    override fun IsHealthy(): Boolean {
+        return Storage.size > 0
+    }
+
+    override fun Search(
         className: String,
         mapSearchTerms: HashMap<String, Operator>
     ): Any? {
@@ -178,7 +181,7 @@ object FileAdapter : BaseAdapter() {
         return data
     }
 
-    override fun GetById(className: String, id: String): String? {
+    override fun GetById(className: String, paramId: String): String? {
         var storage = Storage[className]
         var data: String? = null
         storage?.let {
@@ -188,7 +191,7 @@ object FileAdapter : BaseAdapter() {
                 for (prop in item.javaClass.kotlin.memberProperties) {
                     if (prop.name == "id") {
                         logger.info("${prop.get(item)}")
-                        if (prop.get(item).toString() == id) {
+                        if (prop.get(item).toString() == paramId) {
                             element = item
                             break@loop
                         }
@@ -200,8 +203,17 @@ object FileAdapter : BaseAdapter() {
         return data
     }
 
-    override fun GetWithQueryString(className: String, query: String): String? {
-        return null
+    override fun GetWithQueryString(className: String, queryString: String): String? {
+        val pairs = Helpers.ParamsSplit(queryString)
+        var storage = Storage[className]
+        val json = Gson()
+        var data: String? = null
+        storage?.let {
+            val results = dataAdapter.Search(className, pairs)
+            // search with query string params
+            data = json.toJson(results)
+        }
+        return data
     }
 
     override fun Post(className: String, body: String): String? {
@@ -219,21 +231,38 @@ object FileAdapter : BaseAdapter() {
             baseMapped.id = Helpers.shortUUID()
             // Create
             it?.add(baseMapped)
-            dataAdapter.saveStorageMap(className)
+            dataAdapter.SaveStorage(className)
             data = gson.toJson(objMapped)
         }
         return data
     }
 
-    override fun Put(className: String, body: String) {
+    override fun Put(className: String, body: String, paramId: String): String? {
+        var storage = Storage[className]
+        var data: String? = null
+        val id = Integer.parseInt(paramId)
+        storage?.let {
+            var obj = Class.forName(className).getDeclaredConstructor().newInstance()
+            val gson =
+                GsonBuilder()
+                    .serializeNulls()
+                    .setDateFormat(DateFormat)
+                    .create()
+            var objMapped = gson.fromJson(body, obj::class.java)
+            // Update
+            it[id] = objMapped
+            dataAdapter.SaveStorage(className)
+            data = gson.toJson(objMapped)
 
+        }
+        return data
     }
 
     override fun DeleteAll(className: String) {
 
     }
 
-    override fun DeleteById(className: String, id: Int) {
+    override fun DeleteById(className: String, paramId: String) {
 
     }
 }
