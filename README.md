@@ -70,7 +70,10 @@ Add `_sort` and `_order` (ascending order by default)
 GET /posts?_sort=views&_order=asc
 GET /posts/1/comments?_sort=votes&_order=asc
 ```
-
+### Testing
+```
+ for i in {1..2}; do curl -XPOST localhost:8000/comments -d"{\"postId\":\"$i\",\"body\":\"Body $i\", \"author\":\"Author $i\" }"; done;
+```
 
 ## Extras
 
