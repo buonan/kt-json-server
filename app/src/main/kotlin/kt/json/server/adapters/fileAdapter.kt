@@ -136,7 +136,7 @@ object FileAdapter : BaseAdapter() {
                     if (index > dynList.size || index + itemsPerPage > dynList.size) {
                         found = null
                     } else {
-                        val startIndex = index * itemsPerPage
+                        val startIndex = (index - 1) * itemsPerPage
                         found = dynList?.subList(startIndex, startIndex + itemsPerPage)
                     }
                     break@loop

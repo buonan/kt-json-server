@@ -43,6 +43,7 @@ object MongoDbAdapter : BaseAdapter() {
     ): Any? {
         val coll = db?.getCollection(className)
         var found: MutableList<Document>? = ArrayList<Document>()
+        // Do want to do this here?
         var dynList = coll?.find()?.toMutableList<Document>()
         loop@ for ((sKey, sOpValue) in mapSearchTerms) {
             when (sKey) {
@@ -108,7 +109,7 @@ object MongoDbAdapter : BaseAdapter() {
                     if (index > dynList?.size!! || index + itemsPerPage > dynList?.size!!) {
                         found = null
                     } else {
-                        val startIndex = index * itemsPerPage
+                        val startIndex = (index - 1) * itemsPerPage
                         found = dynList?.subList(startIndex, startIndex + itemsPerPage)
                     }
                     break@loop
