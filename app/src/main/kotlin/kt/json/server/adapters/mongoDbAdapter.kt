@@ -108,7 +108,8 @@ object MongoDbAdapter : BaseAdapter() {
                     if (index > dynList?.size!! || index + itemsPerPage > dynList?.size!!) {
                         found = null
                     } else {
-                        found = dynList?.subList(index, index + itemsPerPage)
+                        val startIndex = index * itemsPerPage
+                        found = dynList?.subList(startIndex, startIndex + itemsPerPage)
                     }
                     break@loop
                 }
