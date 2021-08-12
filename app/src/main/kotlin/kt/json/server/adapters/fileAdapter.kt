@@ -90,14 +90,6 @@ object FileAdapter : BaseAdapter() {
                                 sortOrder = sOpValue2.value
                             }
                         }
-                        when (sortOrder) {
-                            "desc" -> {
-                                found?.sortByDescending { it.toString() }
-                            }
-                            "asc" -> {
-                                found?.sortBy { it.toString() }
-                            }
-                        }
                     }
                     var obj = Class.forName(className).getDeclaredConstructor().newInstance()
                     for (prop in obj.javaClass.kotlin.memberProperties) {

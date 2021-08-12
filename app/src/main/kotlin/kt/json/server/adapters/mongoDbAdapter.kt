@@ -63,14 +63,6 @@ object MongoDbAdapter : BaseAdapter() {
                                 sortOrder = sOpValue2.value
                             }
                         }
-                        when (sortOrder) {
-                            "desc" -> {
-                                found?.sortByDescending { it.toString() }
-                            }
-                            "asc" -> {
-                                found?.sortBy { it.toString() }
-                            }
-                        }
                     }
                     var obj = Class.forName(className).getDeclaredConstructor().newInstance()
                     for (prop in obj.javaClass.kotlin.memberProperties) {
@@ -78,10 +70,10 @@ object MongoDbAdapter : BaseAdapter() {
                             when (sortOrder) {
                                 // GET /posts?_sort=title&_order=asc
                                 "desc" -> {
-                                    dynList?.sortByDescending { prop.get(it).toString() }
+                                    dynList?.sortByDescending { it[field].toString() }
                                 }
                                 "asc" -> {
-                                    dynList?.sortBy { prop.get(it).toString() }
+                                    dynList?.sortBy { it[field].toString() }
                                 }
                             }
                         }
