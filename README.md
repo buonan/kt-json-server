@@ -53,11 +53,11 @@ GET /posts?id=1
 
 ### Paginate
 
-Use `_page` and optionally `_limit` to paginate returned data.
+Use `_page` and optionally `_size` to paginate returned data.
 
 ```
 GET /posts?_page=7
-GET /posts?_page=7&_limit=20
+GET /posts?_page=7&_size=20
 ```
 
 _10 items are returned by default_

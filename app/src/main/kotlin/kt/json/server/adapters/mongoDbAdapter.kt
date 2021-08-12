@@ -82,18 +82,18 @@ object MongoDbAdapter : BaseAdapter() {
                     break@loop
                 }
                 //GET /posts?_page=7
-                //GET /posts?_page=7&_limit=20
+                //GET /posts?_page=7&_size=20
                 "_page" -> {
                     logger.trace("------ _page ------")
                     var index = 0;
                     var itemsPerPage = 10
                     for ((sKey2, sOpValue2) in mapSearchTerms) {
-                        logger.trace("------ _limit ------")
+                        logger.trace("------ _size ------")
                         when (sKey2) {
                             "_page" -> {
                                 index = sOpValue2.value.toInt()
                             }
-                            "_limit" -> {
+                            "_size" -> {
                                 itemsPerPage = sOpValue2.value.toInt()
                             }
                         }

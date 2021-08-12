@@ -43,7 +43,7 @@ class AppTest {
         with(handleRequest(HttpMethod.Get, "/comments")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
-        with(handleRequest(HttpMethod.Get, "/comments?_page=1&_limit=10")) {
+        with(handleRequest(HttpMethod.Get, "/comments?_page=1&_size=10")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
         with(handleRequest(HttpMethod.Get, "/users")) {
