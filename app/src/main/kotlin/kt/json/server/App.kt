@@ -20,7 +20,7 @@ import java.util.*
 val logger: Logger = LoggerFactory.getLogger("main.class")
 
 // Global Endpoint adapters here
-val EndpointAdapter: BaseAdapter = FileAdapter
+val EndpointAdapter: BaseAdapter = MongoDbAdapter
 
 class App {
     val greeting: String
@@ -57,6 +57,7 @@ fun Application.main(testing: Boolean = false) {
     logger.debug("------ DEBUG enabled ------")
     logger.error("------ ERROR enabled ------")
     logger.trace("------ TRACE enabled ------")
+    logger.info("------ Endpoint ${EndpointAdapter::class.java.name} ------")
     printRoutes()
     install(CORS) {
         anyHost()

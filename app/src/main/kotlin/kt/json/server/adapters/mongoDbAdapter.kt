@@ -34,7 +34,13 @@ object MongoDbAdapter : BaseAdapter() {
     }
 
     override fun IsHealthy(): Boolean {
-        return db != null
+        var isMongoLive = true
+        try {
+            db?.runCommand("{serverStatus:1, maxTimeMS:5}")
+        } catch (e: Exception) {
+            isMongoLive = false
+        }
+        return (db != null && isMongoLive)
     }
 
     override fun Search(
