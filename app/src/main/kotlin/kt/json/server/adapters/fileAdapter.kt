@@ -233,7 +233,6 @@ object FileAdapter : BaseAdapter() {
     override fun Put(className: String, body: String, paramId: String): String? {
         var storage = Storage[className]
         var data: String? = null
-        val id = Integer.parseInt(paramId)
         storage?.let {
             var obj = Class.forName(className).getDeclaredConstructor().newInstance()
             val gson =
@@ -243,10 +242,14 @@ object FileAdapter : BaseAdapter() {
                     .create()
             var objMapped = gson.fromJson(body, obj::class.java)
             // Update
-            it[id] = objMapped
-            EndpointAdapter.SaveStorage(className)
-            data = gson.toJson(objMapped)
-
+            var item = it.find { el -> (el as IBase).id == paramId } ?: null
+            val index = it.indexOf(item)
+            if (index >= 0) {
+                (objMapped as IBase).id = paramId
+                it[index] = objMapped
+                EndpointAdapter.SaveStorage(className)
+                data = gson.toJson(objMapped)
+            }
         }
         return data
     }
@@ -255,7 +258,21 @@ object FileAdapter : BaseAdapter() {
 
     }
 
-    override fun DeleteById(className: String, paramId: String) {
-
+    override fun DeleteById(className: String, paramId: String):String? {
+        var storage = Storage[className]
+        var data: String? = null
+        storage?.let {
+            // Update
+            var item = it.find { el -> (el as IBase).id == paramId } ?: null
+            val index = it.indexOf(item)
+            if (index >= 0) {
+                it.removeAt(index)
+                EndpointAdapter.SaveStorage(className)
+                data = index.toString()
+            }
+        }
+        return data
     }
 }
+
+

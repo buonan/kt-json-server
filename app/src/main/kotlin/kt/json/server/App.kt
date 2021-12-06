@@ -20,7 +20,7 @@ import java.util.*
 val logger: Logger = LoggerFactory.getLogger("main.class")
 
 // Global Endpoint adapters here
-val EndpointAdapter: BaseAdapter = MongoDbAdapter
+val EndpointAdapter: BaseAdapter = FileAdapter
 
 class App {
     val greeting: String

@@ -59,6 +59,9 @@ suspend fun handlePut(
 ) {
     logger.trace("------ handlePut ------")
     var text = EndpointAdapter.Put(className, app.call.receiveText(), paramId)
+    if (text == null) {
+        app.call.respondText(text!!, ContentType.Text.Plain, status = HttpStatusCode.NotFound)
+    }
     app.call.respondText(text!!, ContentType.Text.Plain, status = HttpStatusCode.OK)
 }
 
@@ -68,7 +71,10 @@ suspend fun handleDelete(
     paramId: String
 ) {
     logger.trace("------ handleDelete ------")
-    var storage = EndpointAdapter.DeleteById(className, paramId)
+    var deleted = EndpointAdapter.DeleteById(className, paramId)
+    if (deleted == null) {
+        app.call.respondText(paramId, ContentType.Text.Plain, status = HttpStatusCode.NotFound)
+    }
     app.call.respondText("Deleted\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
 }
 

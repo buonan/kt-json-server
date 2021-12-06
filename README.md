@@ -43,6 +43,18 @@ PUT    /posts/1
 PATCH  /posts/1
 DELETE /posts/1
 ```
+### POST
+```
+curl -XPOST /posts -d '{"title":"Another Post", "author":"John"}'
+```
+### PUT
+```
+curl -XPUT localhost:8000/posts/qec4pl455iyd -d '{"title":"1nd post updated", "author":"bob"}' 
+```
+### DELETE
+```
+curl -XDELETE localhost:8000/posts/qec4pl455iyd 
+```
 
 ### Filter
 

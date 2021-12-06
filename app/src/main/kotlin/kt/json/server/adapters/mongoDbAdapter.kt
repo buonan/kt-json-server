@@ -183,7 +183,7 @@ object MongoDbAdapter : BaseAdapter() {
 
     }
 
-    override fun DeleteById(className: String, paramId: String) {
-
+    override fun DeleteById(className: String, paramId: String): String? {
+        return null
     }
 }

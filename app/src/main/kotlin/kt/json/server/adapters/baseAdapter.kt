@@ -18,5 +18,5 @@ abstract class BaseAdapter {
     abstract fun Post(className:String, body: String): String?
     abstract fun Put(className:String, body: String, paramId: String): String?
     abstract fun DeleteAll(className:String)
-    abstract fun DeleteById(className:String, paramId: String)
+    abstract fun DeleteById(className:String, paramId: String): String?
 }
