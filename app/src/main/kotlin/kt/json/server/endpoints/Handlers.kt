@@ -60,7 +60,7 @@ suspend fun handlePut(
     logger.trace("------ handlePut ------")
     var text = EndpointAdapter.Put(className, app.call.receiveText(), paramId)
     if (text == null) {
-        app.call.respondText(text!!, ContentType.Text.Plain, status = HttpStatusCode.NotFound)
+        app.call.respondText("Not found!\n", ContentType.Text.Plain, status = HttpStatusCode.NotFound)
     }
     app.call.respondText(text!!, ContentType.Text.Plain, status = HttpStatusCode.OK)
 }
@@ -73,7 +73,20 @@ suspend fun handleDelete(
     logger.trace("------ handleDelete ------")
     var deleted = EndpointAdapter.DeleteById(className, paramId)
     if (deleted == null) {
-        app.call.respondText(paramId, ContentType.Text.Plain, status = HttpStatusCode.NotFound)
+        app.call.respondText("Not found!\n", ContentType.Text.Plain, status = HttpStatusCode.NotFound)
+    }
+    app.call.respondText("Deleted\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
+}
+
+
+suspend fun handleDeleteAll(
+    app: PipelineContext<Unit, ApplicationCall>,
+    className: String,
+) {
+    logger.trace("------ handleDelete ------")
+    var deleted = EndpointAdapter.DeleteAll(className)
+    if (deleted == null) {
+        app.call.respondText("Not found!\n", ContentType.Text.Plain, status = HttpStatusCode.NotFound)
     }
     app.call.respondText("Deleted\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
 }

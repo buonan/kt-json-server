@@ -55,6 +55,10 @@ curl -XPUT localhost:8000/posts/qec4pl455iyd -d '{"title":"1nd post updated", "a
 ```
 curl -XDELETE localhost:8000/posts/qec4pl455iyd 
 ```
+### DELETE All
+```
+curl -XDELETE localhost:8000/posts 
+```
 
 ### Filter
 

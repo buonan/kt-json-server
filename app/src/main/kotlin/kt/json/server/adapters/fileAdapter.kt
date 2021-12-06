@@ -254,15 +254,22 @@ object FileAdapter : BaseAdapter() {
         return data
     }
 
-    override fun DeleteAll(className: String) {
-
+    override fun DeleteAll(className: String):Boolean? {
+        var storage = Storage[className]
+        var response: Boolean? = false
+        storage?.let {
+            // Delete all
+            it.clear()
+            response =  true
+        }
+        return response
     }
 
     override fun DeleteById(className: String, paramId: String):String? {
         var storage = Storage[className]
         var data: String? = null
         storage?.let {
-            // Update
+            // Delete
             var item = it.find { el -> (el as IBase).id == paramId } ?: null
             val index = it.indexOf(item)
             if (index >= 0) {
