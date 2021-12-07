@@ -5,13 +5,20 @@ package kt.json.server
 
 import io.ktor.application.*
 import io.ktor.http.*
+import io.ktor.server.engine.*
 import io.ktor.server.testing.*
+import io.ktor.server.testing.client.*
 import org.junit.FixMethodOrder
 import org.junit.runners.MethodSorters
 import kotlin.test.*
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class AppTest {
+    @BeforeTest
+    fun beforeTest() {
+        println("beforeTest")
+    }
+
     @Test
     fun testAppHasAGreeting() {
         val classUnderTest = App()
@@ -43,6 +50,9 @@ class AppTest {
         with(handleRequest(HttpMethod.Get, "/comments")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
+        with(handleRequest(HttpMethod.Get, "/comments/1")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
         with(handleRequest(HttpMethod.Get, "/comments?_page=1&_size=10")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
@@ -50,6 +60,37 @@ class AppTest {
             assertEquals(HttpStatusCode.OK, response.status())
         }
         with(handleRequest(HttpMethod.Get, "/health")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
+    }
+
+    @Test
+    fun testDeleteRequests() = withTestApplication(Application::main) {
+        with(handleRequest(HttpMethod.Post, "/comments") {
+            // Add headers/body
+            setBody("{'body':'Testing body', 'author':'Bob'}")
+        }) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            assertNotNull(response.content)
+        }
+        with(handleRequest(HttpMethod.Delete, "/posts")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
+        with(handleRequest(HttpMethod.Delete, "/comments/1h7lflez9gtvc")) {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
+    }
+
+    @Test
+    fun testPutRequests() = withTestApplication(Application::main) {
+        with(handleRequest(HttpMethod.Put, "/comments/rhlnlo7e1noz") {
+            // Add headers/body
+            setBody("{'body':'Testing body', 'author':'Bob'}")
+        }) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            assertNotNull(response.content)
+        }
+        with(handleRequest(HttpMethod.Get, "/comments")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
     }

@@ -61,8 +61,9 @@ suspend fun handlePut(
     var text = EndpointAdapter.Put(className, app.call.receiveText(), paramId)
     if (text == null) {
         app.call.respondText("Not found!\n", ContentType.Text.Plain, status = HttpStatusCode.NotFound)
+    }  else {
+        app.call.respondText(text!!, ContentType.Text.Plain, status = HttpStatusCode.OK)
     }
-    app.call.respondText(text!!, ContentType.Text.Plain, status = HttpStatusCode.OK)
 }
 
 suspend fun handleDelete(
@@ -74,8 +75,9 @@ suspend fun handleDelete(
     var deleted = EndpointAdapter.DeleteById(className, paramId)
     if (deleted == null) {
         app.call.respondText("Not found!\n", ContentType.Text.Plain, status = HttpStatusCode.NotFound)
+    } else {
+        app.call.respondText("Deleted\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
     }
-    app.call.respondText("Deleted\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
 }
 
 
@@ -87,8 +89,9 @@ suspend fun handleDeleteAll(
     var deleted = EndpointAdapter.DeleteAll(className)
     if (deleted == null) {
         app.call.respondText("Not found!\n", ContentType.Text.Plain, status = HttpStatusCode.NotFound)
+    } else {
+        app.call.respondText("Deleted\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
     }
-    app.call.respondText("Deleted\n", ContentType.Text.Plain, status = HttpStatusCode.OK)
 }
 
 suspend fun handleMeta(
