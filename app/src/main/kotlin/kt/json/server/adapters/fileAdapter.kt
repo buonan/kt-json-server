@@ -3,8 +3,6 @@ package kt.json.server
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import io.ktor.application.*
-import io.ktor.request.*
 import java.io.File
 import java.lang.reflect.Type
 import java.net.URLDecoder
@@ -17,6 +15,11 @@ object FileAdapter : BaseAdapter() {
     override fun GetObjectType(className: String): Type? {
         val obj = Class.forName(className).getDeclaredConstructor().newInstance()
         return TypeToken.getParameterized(ArrayList::class.java, obj::class.java).type
+    }
+
+    override fun TestPopulateStorage(className: String, body: String): String? {
+        val obj = this.Post(className, body)
+        return obj
     }
 
     override fun InitStorage(className: String) {

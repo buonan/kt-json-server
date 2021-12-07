@@ -22,6 +22,11 @@ object MongoDbAdapter : BaseAdapter() {
         return TypeToken.getParameterized(ArrayList::class.java, obj::class.java).type
     }
 
+    override fun TestPopulateStorage(className: String, body: String): String? {
+        val obj = this.Post(className, body)
+        return (obj as IBase).id
+    }
+
     override fun InitStorage(className: String) {
         try {
             db?.createCollection(className)

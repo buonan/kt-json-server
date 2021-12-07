@@ -49,6 +49,12 @@ fun printRoutes() {
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
+// Populate for unit tests
+fun Application.populateTestStorage(className: String, body: String): String? {
+    val obj = EndpointAdapter.TestPopulateStorage(className, body)
+    return obj
+}
+
 fun Application.main(testing: Boolean = false) {
     println(
         "Trace=${logger.isTraceEnabled}, Debug=${logger.isDebugEnabled}, Info=${logger.isInfoEnabled}, Warn=${logger.isWarnEnabled}, Error=${logger.isErrorEnabled}"

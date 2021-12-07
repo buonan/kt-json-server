@@ -3,6 +3,7 @@
  */
 package kt.json.server
 
+import com.google.gson.GsonBuilder
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.server.engine.*
@@ -14,9 +15,21 @@ import kotlin.test.*
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class AppTest {
+    var testObject: Comments? = null
+
     @BeforeTest
-    fun beforeTest() {
+    fun beforeTest() = withTestApplication(Application::main) {
         println("beforeTest")
+        val className = "kt.json.server.Comments"
+        val body = "{'body':'Testing body', 'author':'Bob'}"
+        val json = application.populateTestStorage(className, body)
+        val obj = Class.forName(className).getDeclaredConstructor().newInstance()
+        val gson =
+            GsonBuilder()
+                .serializeNulls()
+                .setDateFormat(DateFormat)
+                .create()
+        testObject = gson.fromJson(json, obj::class.java) as Comments
     }
 
     @Test
@@ -50,7 +63,7 @@ class AppTest {
         with(handleRequest(HttpMethod.Get, "/comments")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
-        with(handleRequest(HttpMethod.Get, "/comments/1")) {
+        with(handleRequest(HttpMethod.Get, "/comments/${testObject?.id}")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
         with(handleRequest(HttpMethod.Get, "/comments?_page=1&_size=10")) {
@@ -76,14 +89,14 @@ class AppTest {
         with(handleRequest(HttpMethod.Delete, "/posts")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
-        with(handleRequest(HttpMethod.Delete, "/comments/1h7lflez9gtvc")) {
+        with(handleRequest(HttpMethod.Delete, "/comments/${testObject?.id}")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
     }
 
     @Test
     fun testPutRequests() = withTestApplication(Application::main) {
-        with(handleRequest(HttpMethod.Put, "/comments/rhlnlo7e1noz") {
+        with(handleRequest(HttpMethod.Put, "/comments/${testObject?.id}") {
             // Add headers/body
             setBody("{'body':'Testing body', 'author':'Bob'}")
         }) {

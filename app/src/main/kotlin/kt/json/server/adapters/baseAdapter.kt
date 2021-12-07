@@ -4,6 +4,7 @@ import java.lang.reflect.Type
 
 abstract class BaseAdapter {
     abstract fun GetObjectType(className: String): Type?
+    abstract fun TestPopulateStorage(className: String, body: String): String?
     abstract fun InitStorage(className: String)
     abstract fun SaveStorage(className: String)
     abstract fun Search(
