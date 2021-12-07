@@ -3,6 +3,7 @@ package kt.json.server
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.mongodb.client.MongoDatabase
+import com.mongodb.client.model.Filters
 import org.bson.Document
 import org.bson.types.ObjectId
 import java.lang.reflect.Type
@@ -176,14 +177,24 @@ object MongoDbAdapter : BaseAdapter() {
     }
 
     override fun Put(className: String, body: String, paramId: String): String? {
-        return null
+        val coll = db?.getCollection(className)
+        val data = coll?.findOneById(ObjectId(paramId))
+        var document: Document = Document.parse(body)
+        val result = coll?.replaceOne(
+            Filters.eq("_id", ObjectId(paramId)), document)
+        return result.toString()
     }
 
     override fun DeleteAll(className: String): Boolean? {
-        return false
+        val coll = db?.getCollection(className)
+        coll?.deleteMany()
+        return true
     }
 
     override fun DeleteById(className: String, paramId: String): String? {
-        return null
+        val coll = db?.getCollection(className)
+        val data = coll?.findOneById(ObjectId(paramId))?.toJson()
+        coll?.deleteOne(data.toString())
+        return data
     }
 }
