@@ -6,9 +6,7 @@ package kt.json.server
 import com.google.gson.GsonBuilder
 import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.server.engine.*
 import io.ktor.server.testing.*
-import io.ktor.server.testing.client.*
 import org.junit.FixMethodOrder
 import org.junit.runners.MethodSorters
 import kotlin.test.*

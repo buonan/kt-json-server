@@ -29,6 +29,13 @@ Install Kotlin JSON Server
 
 gradlew run
 
+## Build and Run Docker container 
+
+gradlew clean
+gradlew instalLDist
+docker build -t kt-json-server .
+docker run -p 8000:8000 kt-json-server
+
 ## Routes
 
 Based on the files in the models folder, here are all the default routes.
