@@ -31,7 +31,8 @@ fun Route.public() {
                     var useService = true
                     var typeName = className.split('.').last()
                     try {
-                        var obj = Class.forName("kt.json.server.Services.${typeName}").getDeclaredConstructor().newInstance() as IService
+                        var obj = Class.forName("kt.json.server.Services.${typeName}").getDeclaredConstructor()
+                            .newInstance() as IService
                         var json = obj.Get(className)
                         json?.let {
                             this.call.respondText(it, ContentType.Application.Json)
@@ -91,12 +92,12 @@ fun Route.public() {
         }
         // meta
         get("/$route/_meta") {
-          try {
-              handleMeta(this, className)
-          } catch (e: Exception) {
-              call.respondText("Error: ${e.message}\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
-          }
-      }
+            try {
+                handleMeta(this, className)
+            } catch (e: Exception) {
+                call.respondText("Error: ${e.message}\n", ContentType.Text.Plain, HttpStatusCode.InternalServerError)
+            }
+        }
     }
 }
 

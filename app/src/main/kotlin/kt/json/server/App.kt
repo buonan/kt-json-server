@@ -6,6 +6,7 @@ package kt.json.server
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.routing.*
+import io.ktor.http.*
 import io.ktor.serialization.*
 import org.reflections.*
 import org.reflections.scanners.*
@@ -14,6 +15,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import kotlinx.serialization.json.*
 import io.ktor.auth.*
+import io.ktor.response.*
 import java.util.*
 
 // Global logger
@@ -67,6 +69,14 @@ fun Application.main(testing: Boolean = false) {
     printRoutes()
     install(CORS) {
         anyHost()
+        allowCredentials = true
+        method(HttpMethod.Options)
+        method(HttpMethod.Put)
+        method(HttpMethod.Patch)
+        method(HttpMethod.Delete)
+        header(HttpHeaders.AccessControlAllowHeaders)
+        header(HttpHeaders.ContentType)
+        header(HttpHeaders.AccessControlAllowOrigin)
     }
     install(DefaultHeaders)
     install(CallLogging)
@@ -93,6 +103,7 @@ fun Application.main(testing: Boolean = false) {
         authenticate("basic-auth") {
             protected()
         }
+        custom()
         public()
         health()
     }

@@ -13,12 +13,18 @@ import kotlin.test.*
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class AppTest {
-    var testObject: Comments? = null
+    private var testComment: Comment? = null
+    private var testPost: Post? = null
 
     @BeforeTest
     fun beforeTest() = withTestApplication(Application::main) {
         println("beforeTest")
-        val className = "kt.json.server.Comments"
+        testComment = createComment(application)
+        testPost = createPost(application)
+    }
+
+    private fun createComment(application: Application): Comment? {
+        val className = "kt.json.server.Comment"
         val body = "{'body':'Testing body', 'author':'Bob'}"
         val json = application.populateTestStorage(className, body)
         val obj = Class.forName(className).getDeclaredConstructor().newInstance()
@@ -27,7 +33,20 @@ class AppTest {
                 .serializeNulls()
                 .setDateFormat(DateFormat)
                 .create()
-        testObject = gson.fromJson(json, obj::class.java) as Comments
+        return gson.fromJson(json, obj::class.java) as Comment
+    }
+
+    private fun createPost(application: Application): Post? {
+        val className = "kt.json.server.Post"
+        val body = "{'title':'Testing body', 'author':'Bob'}"
+        val json = application.populateTestStorage(className, body)
+        val obj = Class.forName(className).getDeclaredConstructor().newInstance()
+        val gson =
+            GsonBuilder()
+                .serializeNulls()
+                .setDateFormat(DateFormat)
+                .create()
+        return gson.fromJson(json, obj::class.java) as Post
     }
 
     @Test
@@ -38,36 +57,36 @@ class AppTest {
 
     @Test
     fun testPostRequests() = withTestApplication(Application::main) {
-        with(handleRequest(HttpMethod.Post, "/comments") {
+        with(handleRequest(HttpMethod.Post, "/comment") {
             // Add headers/body
             setBody("{'body':'Testing body', 'author':'Bob'}")
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertNotNull(response.content)
         }
-        with(handleRequest(HttpMethod.Get, "/comments")) {
+        with(handleRequest(HttpMethod.Get, "/comment")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
     }
 
     @Test
     fun testGetRequests() = withTestApplication(Application::main) {
-        with(handleRequest(HttpMethod.Get, "/posts")) {
+        with(handleRequest(HttpMethod.Get, "/post")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
-        with(handleRequest(HttpMethod.Get, "/posts?_sort=views&_order=asc")) {
+        with(handleRequest(HttpMethod.Get, "/post?_sort=views&_order=asc")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
-        with(handleRequest(HttpMethod.Get, "/comments")) {
+        with(handleRequest(HttpMethod.Get, "/comment")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
-        with(handleRequest(HttpMethod.Get, "/comments/${testObject?.id}")) {
+        with(handleRequest(HttpMethod.Get, "/comment/${testComment?.id}")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
-        with(handleRequest(HttpMethod.Get, "/comments?_page=1&_size=10")) {
+        with(handleRequest(HttpMethod.Get, "/comment?_page=1&_size=10")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
-        with(handleRequest(HttpMethod.Get, "/users")) {
+        with(handleRequest(HttpMethod.Get, "/user")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
         with(handleRequest(HttpMethod.Get, "/health")) {
@@ -77,31 +96,31 @@ class AppTest {
 
     @Test
     fun testDeleteRequests() = withTestApplication(Application::main) {
-        with(handleRequest(HttpMethod.Post, "/comments") {
+        with(handleRequest(HttpMethod.Post, "/comment") {
             // Add headers/body
             setBody("{'body':'Testing body', 'author':'Bob'}")
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertNotNull(response.content)
         }
-        with(handleRequest(HttpMethod.Delete, "/posts")) {
+        with(handleRequest(HttpMethod.Delete, "/post")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
-        with(handleRequest(HttpMethod.Delete, "/comments/${testObject?.id}")) {
+        with(handleRequest(HttpMethod.Delete, "/comment/${testComment?.id}")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
     }
 
     @Test
     fun testPutRequests() = withTestApplication(Application::main) {
-        with(handleRequest(HttpMethod.Put, "/comments/${testObject?.id}") {
+        with(handleRequest(HttpMethod.Put, "/comment/${testComment?.id}") {
             // Add headers/body
             setBody("{'body':'Testing body', 'author':'Bob'}")
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertNotNull(response.content)
         }
-        with(handleRequest(HttpMethod.Get, "/comments")) {
+        with(handleRequest(HttpMethod.Get, "/comment")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
     }

@@ -95,7 +95,7 @@ GET /posts/1/comments?_sort=votes&_order=asc
 ```
 ### Testing
 ```
-gradlw test
+gradlew test
 ```
 #### Populate data
 ```

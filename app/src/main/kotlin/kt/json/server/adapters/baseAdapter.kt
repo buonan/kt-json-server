@@ -1,5 +1,6 @@
 package kt.json.server
 
+import org.bson.Document
 import java.lang.reflect.Type
 
 abstract class BaseAdapter {
@@ -10,7 +11,7 @@ abstract class BaseAdapter {
     abstract fun Search(
         className: String,
         mapSearchTerms: HashMap<String, Operator>
-    ): Any?
+    ): MutableList<Any>?
     abstract fun IsHealthy(): Boolean
 
     abstract fun GetAll(className:String): String?

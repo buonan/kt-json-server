@@ -72,7 +72,7 @@ object FileAdapter : BaseAdapter() {
     override fun Search(
         className: String,
         mapSearchTerms: HashMap<String, Operator>
-    ): Any? {
+    ): MutableList<Any>? {
         var found: MutableList<Any>? = ArrayList<Any>()
         var dynList = Storage[className]!!
         loop@ for ((sKey, sOpValue) in mapSearchTerms) {
@@ -206,8 +206,12 @@ object FileAdapter : BaseAdapter() {
         var data: String? = null
         storage?.let {
             val results = EndpointAdapter.Search(className, pairs)
-            // search with query string params
-            data = json.toJson(results)
+            results.let {
+                if (results?.size!! > 0) {
+                    // search with query string params
+                    data = json.toJson(results)
+                }
+            }
         }
         return data
     }
@@ -257,18 +261,18 @@ object FileAdapter : BaseAdapter() {
         return data
     }
 
-    override fun DeleteAll(className: String):Boolean? {
+    override fun DeleteAll(className: String): Boolean? {
         var storage = Storage[className]
         var response: Boolean? = false
         storage?.let {
             // Delete all
             it.clear()
-            response =  true
+            response = true
         }
         return response
     }
 
-    override fun DeleteById(className: String, paramId: String):String? {
+    override fun DeleteById(className: String, paramId: String): String? {
         var storage = Storage[className]
         var data: String? = null
         storage?.let {

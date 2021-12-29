@@ -52,7 +52,7 @@ object MongoDbAdapter : BaseAdapter() {
     override fun Search(
         className: String,
         mapSearchTerms: HashMap<String, Operator>
-    ): Any? {
+    ): MutableList<Any>? {
         val coll = db?.getCollection(className)
         var found: MutableList<Document>? = ArrayList<Document>()
         // Do want to do this here?
@@ -149,7 +149,7 @@ object MongoDbAdapter : BaseAdapter() {
                 }
             }
         }
-        return found
+        return found as MutableList<Any>
     }
 
 
