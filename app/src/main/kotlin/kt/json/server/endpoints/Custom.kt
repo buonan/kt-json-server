@@ -32,4 +32,9 @@ fun Route.custom() {
             call.respond(HttpStatusCode.Forbidden)
         }
     }
+
+    // logout
+    post("/logout") {
+        call.respond(HttpStatusCode.OK)
+    }
 }

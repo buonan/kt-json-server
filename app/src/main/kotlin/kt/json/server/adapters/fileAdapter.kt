@@ -115,24 +115,28 @@ object FileAdapter : BaseAdapter() {
                 //GET /posts?_page=7&_size=20
                 "_page" -> {
                     logger.trace("------ _page ------")
-                    var index = 0;
+                    var page = 0;
                     var itemsPerPage = 10
                     for ((sKey2, sOpValue2) in mapSearchTerms) {
                         logger.trace("------ _size ------")
                         when (sKey2) {
                             "_page" -> {
-                                index = sOpValue2.value.toInt()
+                                page = sOpValue2.value.toInt()
                             }
                             "_size" -> {
                                 itemsPerPage = sOpValue2.value.toInt()
                             }
                         }
                     }
-                    if (index > dynList.size || index + itemsPerPage > dynList.size) {
+                    if ((page - 1) > dynList.size || ((page - 1) * itemsPerPage) > dynList.size) {
                         found = null
                     } else {
-                        val startIndex = (index - 1) * itemsPerPage
-                        found = dynList?.subList(startIndex, startIndex + itemsPerPage)
+                        val startIndex = (page - 1) * itemsPerPage
+                        var endIndex = startIndex + itemsPerPage
+                        if (endIndex > dynList.size) {
+                            endIndex = dynList.size
+                        }
+                        found = dynList?.subList(startIndex, endIndex)
                     }
                     break@loop
                 }
@@ -206,8 +210,8 @@ object FileAdapter : BaseAdapter() {
         var data: String? = null
         storage?.let {
             val results = EndpointAdapter.Search(className, pairs)
-            results.let {
-                if (results?.size!! > 0) {
+            if (results != null) {
+                if (results.size!! > 0) {
                     // search with query string params
                     data = json.toJson(results)
                 }
@@ -228,7 +232,7 @@ object FileAdapter : BaseAdapter() {
                     .create()
             var objMapped = gson.fromJson(body, obj::class.java)
             var baseMapped = objMapped as IBase
-            baseMapped.id = Helpers.shortUUID()
+            baseMapped._id = Helpers.shortUUID()
             // Create
             it?.add(baseMapped)
             EndpointAdapter.SaveStorage(className)
@@ -249,10 +253,10 @@ object FileAdapter : BaseAdapter() {
                     .create()
             var objMapped = gson.fromJson(body, obj::class.java)
             // Update
-            var item = it.find { el -> (el as IBase).id == paramId } ?: null
+            var item = it.find { el -> (el as IBase)._id == paramId } ?: null
             val index = it.indexOf(item)
             if (index >= 0) {
-                (objMapped as IBase).id = paramId
+                (objMapped as IBase)._id = paramId
                 it[index] = objMapped
                 EndpointAdapter.SaveStorage(className)
                 data = gson.toJson(objMapped)
@@ -277,7 +281,7 @@ object FileAdapter : BaseAdapter() {
         var data: String? = null
         storage?.let {
             // Delete
-            var item = it.find { el -> (el as IBase).id == paramId } ?: null
+            var item = it.find { el -> (el as IBase)._id == paramId } ?: null
             val index = it.indexOf(item)
             if (index >= 0) {
                 it.removeAt(index)

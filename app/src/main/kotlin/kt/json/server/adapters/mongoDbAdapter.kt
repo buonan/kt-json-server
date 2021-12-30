@@ -24,7 +24,10 @@ object MongoDbAdapter : BaseAdapter() {
 
     override fun TestPopulateStorage(className: String, body: String): String? {
         val obj = this.Post(className, body)
-        return (obj as IBase).id
+        // Normalize _id from oid to string
+        var doc = Document.parse(obj)
+        doc.set("_id", doc.get("_id").toString())
+        return (doc as Document).toJson()
     }
 
     override fun InitStorage(className: String) {

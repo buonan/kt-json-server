@@ -26,8 +26,10 @@ suspend fun handleGetWithQueryString(
 ) {
     logger.trace("------ handleGetWithQueryString ------")
     var text = EndpointAdapter.GetWithQueryString(className, queryString)
-    text?.let {
-        app.call.respondText(it, Json)
+    if (text == null) {
+        app.call.respond(HttpStatusCode.NotFound)
+    } else {
+        app.call.respondText(text, Json)
     }
 }
 
@@ -38,8 +40,10 @@ suspend fun handleGetById(
 ) {
     logger.trace("------ handleGetById ------")
     var text = EndpointAdapter.GetById(className, paramId)
-    text?.let {
-        app.call.respondText(it, Json)
+    if (text == null) {
+        app.call.respond(HttpStatusCode.NotFound)
+    } else {
+        app.call.respondText(text, Json)
     }
 }
 

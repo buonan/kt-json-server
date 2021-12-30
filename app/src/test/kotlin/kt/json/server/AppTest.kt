@@ -33,7 +33,8 @@ class AppTest {
                 .serializeNulls()
                 .setDateFormat(DateFormat)
                 .create()
-        return gson.fromJson(json, obj::class.java) as Comment
+        val temp = gson.fromJson(json, obj::class.java)
+        return temp as Comment
     }
 
     private fun createPost(application: Application): Post? {
@@ -80,7 +81,7 @@ class AppTest {
         with(handleRequest(HttpMethod.Get, "/comment")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
-        with(handleRequest(HttpMethod.Get, "/comment/${testComment?.id}")) {
+        with(handleRequest(HttpMethod.Get, "/comment/${testComment?._id}")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
         with(handleRequest(HttpMethod.Get, "/comment?_page=1&_size=10")) {
@@ -106,14 +107,14 @@ class AppTest {
         with(handleRequest(HttpMethod.Delete, "/post")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
-        with(handleRequest(HttpMethod.Delete, "/comment/${testComment?.id}")) {
+        with(handleRequest(HttpMethod.Delete, "/comment/${testComment?._id}")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
     }
 
     @Test
     fun testPutRequests() = withTestApplication(Application::main) {
-        with(handleRequest(HttpMethod.Put, "/comment/${testComment?.id}") {
+        with(handleRequest(HttpMethod.Put, "/comment/${testComment?._id}") {
             // Add headers/body
             setBody("{'body':'Testing body', 'author':'Bob'}")
         }) {
