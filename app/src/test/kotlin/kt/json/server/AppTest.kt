@@ -33,8 +33,7 @@ class AppTest {
                 .serializeNulls()
                 .setDateFormat(DateFormat)
                 .create()
-        val temp = gson.fromJson(json, obj::class.java)
-        return temp as Comment
+        return gson.fromJson(json, obj::class.java) as Comment
     }
 
     private fun createPost(application: Application): Post? {
@@ -116,7 +115,7 @@ class AppTest {
     fun testPutRequests() = withTestApplication(Application::main) {
         with(handleRequest(HttpMethod.Put, "/comment/${testComment?._id}") {
             // Add headers/body
-            setBody("{'body':'Testing body', 'author':'Bob'}")
+            setBody("{'body':'Testing body updated', 'author':'Bob'}")
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertNotNull(response.content)

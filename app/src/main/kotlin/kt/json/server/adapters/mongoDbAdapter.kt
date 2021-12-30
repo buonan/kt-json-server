@@ -1,13 +1,14 @@
 package kt.json.server
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters
 import org.bson.Document
 import org.bson.types.ObjectId
-import java.lang.reflect.Type
 import org.litote.kmongo.*
+import java.lang.reflect.Type
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import kotlin.reflect.full.memberProperties
@@ -129,30 +130,41 @@ object MongoDbAdapter : BaseAdapter() {
                 }
                 else -> {
                     logger.trace("------ exact match ------")
-                    dynList.let { it ->
-                        println("${it}")
-                        it?.forEach { it2 ->
-                            println("${it2}")
-                            it2.javaClass.kotlin.members.forEach { it3 ->
-                                if (it3.name == sKey) {
-                                    var h = it3.call(it2)
-                                    val ss = URLDecoder.decode(sOpValue.value, StandardCharsets.UTF_8)
-                                    val op = sOpValue.operation
-                                    when (op) {
-                                        "=" -> {
-                                            if (h.toString() == ss) {
-                                                found?.toMutableList()?.add(it2)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                    val query = Document(sKey, sOpValue.value)
+                    dynList = coll?.find(query)?.toMutableList<Document>()
+                    if (dynList != null) {
+                        if (dynList.size > 0) {
+                            found = dynList
+                        } else {
+                            found = null
                         }
                     }
+//                    dynList.let { it ->
+//                        println("${it}")
+//                        it?.forEach { it2 ->
+//                            println("${it2}")
+//                            it2.javaClass.kotlin.members.forEach { it3 ->
+//                                if (it3.name == sKey) {
+//                                    var h = it3.call(it2)
+//                                    val ss = URLDecoder.decode(sOpValue.value, StandardCharsets.UTF_8)
+//                                    val op = sOpValue.operation
+//                                    when (op) {
+//                                        "=" -> {
+//                                            if (h.toString() == ss) {
+//                                                found?.toMutableList()?.add(it2)
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
                 }
             }
         }
-        return found as MutableList<Any>
+        if (found != null)
+            return found as MutableList<Any>
+        return null
     }
 
 
@@ -170,11 +182,18 @@ object MongoDbAdapter : BaseAdapter() {
 
     override fun GetWithQueryString(className: String, queryString: String): String? {
         val pairs = Helpers.ParamsSplit(queryString)
-        val results = Search(className, pairs)
-        val json = Gson()
         // search with query string params
-        var data = json.toJson(results)
-        return data
+        val results = Search(className, pairs)
+        val gson =
+            GsonBuilder()
+                .serializeNulls()
+                .setDateFormat(DateFormat)
+                .create()
+        var data = gson.toJson(results)
+        if (results != null) {
+            return data
+        }
+        return null
     }
 
     override fun Post(className: String, body: String): String? {
