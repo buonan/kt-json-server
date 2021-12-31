@@ -1,5 +1,6 @@
 package kt.json.server
 
+import kt.json.server.IBase
 import java.util.*
 
 data class User (

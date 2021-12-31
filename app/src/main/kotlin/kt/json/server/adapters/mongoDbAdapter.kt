@@ -2,9 +2,13 @@ package kt.json.server
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializer
 import com.google.gson.reflect.TypeToken
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters
+import kt.json.server.helpers.GsonUtils
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.litote.kmongo.*
@@ -25,10 +29,9 @@ object MongoDbAdapter : BaseAdapter() {
 
     override fun TestPopulateStorage(className: String, body: String): String? {
         val obj = this.Post(className, body)
-        // Normalize _id from oid to string
         var doc = Document.parse(obj)
-        doc.set("_id", doc.get("_id").toString())
-        return (doc as Document).toJson()
+        // Serialize _id as string
+        return GsonUtils.gson.toJson(doc)
     }
 
     override fun InitStorage(className: String) {
@@ -99,26 +102,32 @@ object MongoDbAdapter : BaseAdapter() {
                 }
                 //GET /posts?_page=7
                 //GET /posts?_page=7&_size=20
-                "_page" -> {
+                "_size", "_page" -> {
                     logger.trace("------ _page ------")
-                    var index = 0;
+                    var page = 0;
                     var itemsPerPage = 10
                     for ((sKey2, sOpValue2) in mapSearchTerms) {
                         logger.trace("------ _size ------")
                         when (sKey2) {
                             "_page" -> {
-                                index = sOpValue2.value.toInt()
+                                page = sOpValue2.value.toInt()
                             }
                             "_size" -> {
                                 itemsPerPage = sOpValue2.value.toInt()
                             }
                         }
                     }
-                    if (index > dynList?.size!! || index + itemsPerPage > dynList?.size!!) {
-                        found = null
-                    } else {
-                        val startIndex = (index - 1) * itemsPerPage
-                        found = dynList?.subList(startIndex, startIndex + itemsPerPage)
+                    if (dynList != null) {
+                        if ((page - 1) > dynList.size || ((page - 1) * itemsPerPage) > dynList.size) {
+                            found = null
+                        } else {
+                            val startIndex = (page - 1) * itemsPerPage
+                            var endIndex = startIndex + itemsPerPage
+                            if (endIndex > dynList.size) {
+                                endIndex = dynList.size
+                            }
+                            found = dynList.subList(startIndex, endIndex)
+                        }
                     }
                     break@loop
                 }
@@ -170,8 +179,8 @@ object MongoDbAdapter : BaseAdapter() {
 
     override fun GetAll(className: String): String? {
         val coll = db?.getCollection(className)
-        val data = coll?.find()?.toList()?.json
-        return data
+        val data = coll?.find()?.toList()
+        return GsonUtils.gson.toJson(data)
     }
 
     override fun GetById(className: String, paramId: String): String? {
@@ -189,7 +198,7 @@ object MongoDbAdapter : BaseAdapter() {
                 .serializeNulls()
                 .setDateFormat(DateFormat)
                 .create()
-        var data = gson.toJson(results)
+        var data = GsonUtils.gson.toJson(results)
         if (results != null) {
             return data
         }
@@ -200,7 +209,7 @@ object MongoDbAdapter : BaseAdapter() {
         val col = db?.getCollection(className)
         var document: Document = Document.parse(body)
         col?.insertOne(document)
-        return document.toJson()
+        return GsonUtils.gson.toJson(document)
     }
 
     override fun Put(className: String, body: String, paramId: String): String? {
@@ -208,7 +217,8 @@ object MongoDbAdapter : BaseAdapter() {
         val data = coll?.findOneById(ObjectId(paramId))
         var document: Document = Document.parse(body)
         val result = coll?.replaceOne(
-            Filters.eq("_id", ObjectId(paramId)), document)
+            Filters.eq("_id", ObjectId(paramId)), document
+        )
         return result.toString()
     }
 

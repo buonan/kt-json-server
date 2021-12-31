@@ -113,7 +113,7 @@ object FileAdapter : BaseAdapter() {
                 }
                 //GET /posts?_page=7
                 //GET /posts?_page=7&_size=20
-                "_page" -> {
+                "_size","_page" -> {
                     logger.trace("------ _page ------")
                     var page = 0;
                     var itemsPerPage = 10
@@ -272,6 +272,7 @@ object FileAdapter : BaseAdapter() {
             // Delete all
             it.clear()
             response = true
+            EndpointAdapter.SaveStorage(className)
         }
         return response
     }

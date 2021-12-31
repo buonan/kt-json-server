@@ -84,6 +84,19 @@ suspend fun handleDelete(
     }
 }
 
+suspend fun handleDeleteWithQueryString(
+    app: PipelineContext<Unit, ApplicationCall>,
+    queryString: String,
+    className: String
+) {
+    logger.trace("------ handleGetWithQueryString ------")
+    var text = EndpointAdapter.GetWithQueryString(className, queryString)
+    if (text == null) {
+        app.call.respond(HttpStatusCode.NotFound)
+    } else {
+        app.call.respondText(text, Json)
+    }
+}
 
 suspend fun handleDeleteAll(
     app: PipelineContext<Unit, ApplicationCall>,
