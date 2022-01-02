@@ -1,7 +1,6 @@
 package kt.json.server
 
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import kt.json.server.helpers.GsonUtils
 import java.io.File
@@ -10,7 +9,7 @@ import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import kotlin.reflect.full.memberProperties
 
-object FileAdapter : BaseAdapter() {
+object FileDataAdapter : IDataAdapter {
     var Storage = HashMap<String, java.util.ArrayList<Any>>()
 
     override fun GetObjectType(className: String): Type? {
@@ -227,7 +226,7 @@ object FileAdapter : BaseAdapter() {
         storage.let {
             val obj = Class.forName(className).getDeclaredConstructor().newInstance()
             var objMapped = GsonUtils.gson.fromJson(body, obj::class.java)
-            var baseMapped = objMapped as IBase
+            var baseMapped = objMapped as IModel
             baseMapped._id = Helpers.shortUUID()
             // Create
             it?.add(baseMapped)
@@ -244,10 +243,10 @@ object FileAdapter : BaseAdapter() {
             var obj = Class.forName(className).getDeclaredConstructor().newInstance()
             var objMapped = GsonUtils.gson.fromJson(body, obj::class.java)
             // Update
-            var item = it.find { el -> (el as IBase)._id == paramId } ?: null
+            var item = it.find { el -> (el as IModel)._id == paramId } ?: null
             val index = it.indexOf(item)
             if (index >= 0) {
-                (objMapped as IBase)._id = paramId
+                (objMapped as IModel)._id = paramId
                 it[index] = objMapped
                 EndpointAdapter.SaveStorage(className)
                 data = GsonUtils.gson.toJson(objMapped)
@@ -273,7 +272,7 @@ object FileAdapter : BaseAdapter() {
         var data: String? = null
         storage?.let {
             // Delete
-            var item = it.find { el -> (el as IBase)._id == paramId } ?: null
+            var item = it.find { el -> (el as IModel)._id == paramId } ?: null
             val index = it.indexOf(item)
             if (index >= 0) {
                 it.removeAt(index)

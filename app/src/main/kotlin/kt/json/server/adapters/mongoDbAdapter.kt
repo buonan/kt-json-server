@@ -1,6 +1,5 @@
 package kt.json.server
 
-import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters
@@ -11,7 +10,7 @@ import org.litote.kmongo.*
 import java.lang.reflect.Type
 import kotlin.reflect.full.memberProperties
 
-object MongoDbAdapter : BaseAdapter() {
+object MongoDbDataAdapter : IDataAdapter {
     val mongoConnectionString = "mongodb://root:example@localhost:27017"
     val client = KMongo.createClient(mongoConnectionString) // get com.mongodb.MongoClient new instance
     var db: MongoDatabase? = client.getDatabase("test") // normal java driver usage

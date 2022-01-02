@@ -10,4 +10,4 @@ data class User (
   var password: String? = null,
   var loginToken: String? = null,
   var createdDate: String? = ZonedDateTime.now().format(DateTimeFormatter.ofPattern(DateFormat))
-) : IBase
+) : IModel

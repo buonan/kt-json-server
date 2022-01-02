@@ -4,25 +4,26 @@
 package kt.json.server
 
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.features.*
-import io.ktor.routing.*
 import io.ktor.http.*
+import io.ktor.routing.*
 import io.ktor.serialization.*
-import org.reflections.*
-import org.reflections.scanners.*
-import org.reflections.util.*
+import kotlinx.serialization.json.Json
+import org.reflections.Reflections
+import org.reflections.scanners.SubTypesScanner
+import org.reflections.scanners.TypeAnnotationsScanner
+import org.reflections.util.ClasspathHelper
+import org.reflections.util.ConfigurationBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import kotlinx.serialization.json.*
-import io.ktor.auth.*
-import io.ktor.response.*
 import java.util.*
 
 // Global logger
 val logger: Logger = LoggerFactory.getLogger("main.class")
 
 // Global Endpoint adapters here
-val EndpointAdapter: BaseAdapter = FileAdapter
+val EndpointAdapter: IDataAdapter = FileDataAdapter
 
 class App {
     val greeting: String
@@ -39,7 +40,7 @@ fun printRoutes() {
                 .setScanners(TypeAnnotationsScanner(), SubTypesScanner(false))
         )
 
-    reflections.getSubTypesOf(IBase::class.java).forEach { it ->
+    reflections.getSubTypesOf(IModel::class.java).forEach { it ->
         var name = it.name.split('.').last().lowercase(Locale.getDefault())
         // print routes
         println("Routes http://localhost:8000/${name}")

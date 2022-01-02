@@ -18,7 +18,7 @@ fun Route.public() {
                 .addUrls(ClasspathHelper.forPackage("kt.json.server"))
                 .setScanners(TypeAnnotationsScanner(), SubTypesScanner(false))
         )
-    reflections.getSubTypesOf(IBase::class.java).forEach { it ->
+    reflections.getSubTypesOf(IModel::class.java).forEach { it ->
         // make routes plural /posts, /comments etc
         var route = "${it.name.split('.').last().lowercase(Locale.getDefault())}"
         val className = it.name

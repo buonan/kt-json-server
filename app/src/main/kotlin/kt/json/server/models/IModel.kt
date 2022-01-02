@@ -1,5 +1,5 @@
 package kt.json.server
 
-interface IBase {
+interface IModel {
     var _id: Any?
 }

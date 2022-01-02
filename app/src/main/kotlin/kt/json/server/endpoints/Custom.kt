@@ -1,6 +1,5 @@
 package kt.json.server
 
-import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import io.ktor.application.*
 import io.ktor.http.*
@@ -10,7 +9,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import kt.json.server.helpers.GsonUtils
 import org.bson.Document
-import org.bson.types.ObjectId
 import java.lang.reflect.Type
 
 
