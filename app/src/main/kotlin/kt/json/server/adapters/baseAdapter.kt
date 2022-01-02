@@ -1,6 +1,5 @@
 package kt.json.server
 
-import org.bson.Document
 import java.lang.reflect.Type
 
 abstract class BaseAdapter {

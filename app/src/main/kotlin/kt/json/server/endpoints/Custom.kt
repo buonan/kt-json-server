@@ -1,33 +1,38 @@
 package kt.json.server
 
-import com.google.gson.*
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.http.ContentType.Application.Json
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import io.ktor.util.pipeline.*
+import kt.json.server.helpers.GsonUtils
 import org.bson.Document
-import org.reflections.Reflections
-import org.reflections.scanners.SubTypesScanner
-import org.reflections.scanners.TypeAnnotationsScanner
-import org.reflections.util.ClasspathHelper
-import org.reflections.util.ConfigurationBuilder
-import java.util.*
-import kotlin.reflect.KClass
-import kotlin.reflect.full.memberProperties
+import org.bson.types.ObjectId
+import java.lang.reflect.Type
+
 
 fun Route.custom() {
 
     // login
     post("/login") {
+        val userClassName = "kt.json.server.User"
         var body = call.receiveText()
         var doc: Document = Document.parse(body)
         var email = doc.get("email")
-        var user = EndpointAdapter.GetWithQueryString("kt.json.server.User", "email=${email}")
-        if (user != null) {
-            call.respondText(user.toString(), Json)
+        var userJson = EndpointAdapter.GetWithQueryString(userClassName, "email=${email}")
+        if (userJson != null) {
+            val loginToken = Helpers.longUUID()
+            val collectionType: Type = object : TypeToken<List<User?>?>() {}.getType()
+            val userArrayObj: List<User> = GsonUtils.gson
+                .fromJson(userJson, collectionType) as List<User>
+            var userObj: User = userArrayObj[0] as User
+            userObj.loginToken = loginToken
+            val jsonUser = GsonUtils.gson.toJson(userObj)
+            EndpointAdapter.Put(userClassName, jsonUser, userObj._id.toString())
+            call.respondText(jsonUser, Json)
         } else {
             call.respond(HttpStatusCode.Forbidden)
         }
@@ -35,6 +40,24 @@ fun Route.custom() {
 
     // logout
     post("/logout") {
-        call.respond(HttpStatusCode.OK)
+        val userClassName = "kt.json.server.User"
+        var body = call.receiveText()
+        var doc: Document = Document.parse(body)
+        var email = doc.get("email")
+        var loginToken = doc.get("loginToken")
+        var userJson = EndpointAdapter.GetWithQueryString(userClassName, "email=${email}")
+        if (userJson != null) {
+            val loginToken = Helpers.longUUID()
+            val collectionType: Type = object : TypeToken<List<User?>?>() {}.getType()
+            val userArrayObj: List<User> = GsonUtils.gson
+                .fromJson(userJson, collectionType) as List<User>
+            var userObj: User = userArrayObj[0] as User
+            userObj.loginToken = null
+            val jsonUser = GsonUtils.gson.toJson(userObj)
+            EndpointAdapter.Put(userClassName, jsonUser, userObj._id.toString())
+            call.respond(HttpStatusCode.OK)
+        } else {
+            call.respond(HttpStatusCode.Forbidden)
+        }
     }
 }

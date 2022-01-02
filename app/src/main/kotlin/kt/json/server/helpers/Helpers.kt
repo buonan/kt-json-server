@@ -26,6 +26,11 @@ object Helpers {
         return java.lang.Long.toString(l, Character.MAX_RADIX)
     }
 
+    fun longUUID(): String? {
+        val uuid = UUID.randomUUID()
+        return uuid.toString().replace("-", "")
+    }
+
     fun GetClassServiceHandler(typeName: String): IService {
       return Class.forName("kt.json.server.Services.${typeName}").getDeclaredConstructor().newInstance() as IService
     }

@@ -4,12 +4,20 @@
 package kt.json.server
 
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import kt.json.server.helpers.*
+import org.bson.Document
 import org.junit.FixMethodOrder
 import org.junit.runners.MethodSorters
-import kotlin.test.*
+import org.litote.kmongo.json
+import java.lang.reflect.Type
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class AppTest {
@@ -28,12 +36,7 @@ class AppTest {
         val body = "{'body':'Testing body', 'author':'Bob'}"
         val json = application.populateTestStorage(className, body)
         val obj = Class.forName(className).getDeclaredConstructor().newInstance()
-        val gson =
-            GsonBuilder()
-                .serializeNulls()
-                .setDateFormat(DateFormat)
-                .create()
-        return gson.fromJson(json, obj::class.java) as Comment
+        return GsonUtils.gson.fromJson(json, obj::class.java) as Comment
     }
 
     private fun createPost(application: Application): Post? {
@@ -41,12 +44,7 @@ class AppTest {
         val body = "{'title':'Testing body', 'author':'Bob'}"
         val json = application.populateTestStorage(className, body)
         val obj = Class.forName(className).getDeclaredConstructor().newInstance()
-        val gson =
-            GsonBuilder()
-                .serializeNulls()
-                .setDateFormat(DateFormat)
-                .create()
-        return gson.fromJson(json, obj::class.java) as Post
+        return GsonUtils.gson.fromJson(json, obj::class.java) as Post
     }
 
     @Test
@@ -123,5 +121,40 @@ class AppTest {
         with(handleRequest(HttpMethod.Get, "/comment")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }
+    }
+
+    @Test
+    fun testLoginToken() {
+        val loginToken = Helpers.longUUID()
+        assertNotNull(loginToken)
+    }
+
+    @Test
+    fun testGsonParseDate() {
+        val gson = GsonBuilder().setDateFormat("MMM d, yyyy HH:mm:ss a").create();
+        val dateJson = gson.toJson("Dec 22, 2014 12:00:00 PM");
+        assertNotNull(dateJson)
+    }
+
+    @Test
+    fun testDocumentParseDate() {
+        val doc = Document.parse("{date: \"Dec 22, 2014, 12:00:00 PM\"}")
+        assertNotNull(doc)
+    }
+
+    @Test
+    fun testGsonParseObjectId() {
+        var userJson = "{\"email\":\"desmond\",\"password\":\"password123!\",\"_id\":\"60c844dc50ef4113e0de7d83\"}"
+        var rawJson = "{\"body\":\"Testing body\",\"author\":\"Bob\",\"_id\":{\"timestamp\":1641100920,\"counter\":6807555,\"randomValue1\":4120229,\"randomValue2\":27489}}"
+        var userDoc: Document = Document.parse(userJson)
+        userJson = GsonUtils.gson.toJson(userDoc)
+        assertNotNull(userJson)
+        val userType: Type = object : TypeToken<User?>() {}.getType()
+        val obj = Class.forName("kt.json.server.User").getDeclaredConstructor().newInstance()
+        var user2 = GsonUtils.gson.fromJson(userJson, obj::class.java) as User
+        var user3 = Document.parse(rawJson)
+        val userObj: User = GsonUtils.gson
+            .fromJson(rawJson, userType) as User
+        assertNotNull(userObj)
     }
 }

@@ -1,10 +1,6 @@
 package kt.json.server
 
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonPrimitive
-import com.google.gson.JsonSerializer
 import com.google.gson.reflect.TypeToken
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters
@@ -13,8 +9,6 @@ import org.bson.Document
 import org.bson.types.ObjectId
 import org.litote.kmongo.*
 import java.lang.reflect.Type
-import java.net.URLDecoder
-import java.nio.charset.StandardCharsets
 import kotlin.reflect.full.memberProperties
 
 object MongoDbAdapter : BaseAdapter() {
@@ -193,11 +187,6 @@ object MongoDbAdapter : BaseAdapter() {
         val pairs = Helpers.ParamsSplit(queryString)
         // search with query string params
         val results = Search(className, pairs)
-        val gson =
-            GsonBuilder()
-                .serializeNulls()
-                .setDateFormat(DateFormat)
-                .create()
         var data = GsonUtils.gson.toJson(results)
         if (results != null) {
             return data
@@ -209,15 +198,22 @@ object MongoDbAdapter : BaseAdapter() {
         val col = db?.getCollection(className)
         var document: Document = Document.parse(body)
         col?.insertOne(document)
-        return GsonUtils.gson.toJson(document)
+        val json = GsonUtils.gson.toJson(document)
+        return json
     }
 
     override fun Put(className: String, body: String, paramId: String): String? {
         val coll = db?.getCollection(className)
         val data = coll?.findOneById(ObjectId(paramId))
         var document: Document = Document.parse(body)
+        var obj = Class.forName(className).getDeclaredConstructor().newInstance()
+        for (prop in obj.javaClass.kotlin.memberProperties) {
+            if (prop.name != "_id") {
+                data?.set(prop.name, document[prop.name])
+            }
+        }
         val result = coll?.replaceOne(
-            Filters.eq("_id", ObjectId(paramId)), document
+            Filters.eq("_id", ObjectId(paramId)), data
         )
         return result.toString()
     }

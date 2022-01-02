@@ -3,6 +3,7 @@ package kt.json.server
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import kt.json.server.helpers.GsonUtils
 import java.io.File
 import java.lang.reflect.Type
 import java.net.URLDecoder
@@ -225,18 +226,13 @@ object FileAdapter : BaseAdapter() {
         var data: String? = null
         storage.let {
             val obj = Class.forName(className).getDeclaredConstructor().newInstance()
-            val gson =
-                GsonBuilder()
-                    .serializeNulls()
-                    .setDateFormat(DateFormat)
-                    .create()
-            var objMapped = gson.fromJson(body, obj::class.java)
+            var objMapped = GsonUtils.gson.fromJson(body, obj::class.java)
             var baseMapped = objMapped as IBase
             baseMapped._id = Helpers.shortUUID()
             // Create
             it?.add(baseMapped)
             EndpointAdapter.SaveStorage(className)
-            data = gson.toJson(objMapped)
+            data = GsonUtils.gson.toJson(objMapped)
         }
         return data
     }
@@ -246,12 +242,7 @@ object FileAdapter : BaseAdapter() {
         var data: String? = null
         storage?.let {
             var obj = Class.forName(className).getDeclaredConstructor().newInstance()
-            val gson =
-                GsonBuilder()
-                    .serializeNulls()
-                    .setDateFormat(DateFormat)
-                    .create()
-            var objMapped = gson.fromJson(body, obj::class.java)
+            var objMapped = GsonUtils.gson.fromJson(body, obj::class.java)
             // Update
             var item = it.find { el -> (el as IBase)._id == paramId } ?: null
             val index = it.indexOf(item)
@@ -259,7 +250,7 @@ object FileAdapter : BaseAdapter() {
                 (objMapped as IBase)._id = paramId
                 it[index] = objMapped
                 EndpointAdapter.SaveStorage(className)
-                data = gson.toJson(objMapped)
+                data = GsonUtils.gson.toJson(objMapped)
             }
         }
         return data
