@@ -101,6 +101,12 @@ gradlew test
 ```
  for i in {1..2}; do curl -XPOST localhost:8000/comments -d"{\"postId\":\"$i\",\"body\":\"Body $i\", \"author\":\"Author $i\" }"; done;
 ```
+## Data Adapters
+### File Storage
+### MongoDB Storage
+### MySql Storage
+### Elastic Search Storage
+
 ## Extras
 
 ### Deployment

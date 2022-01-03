@@ -8,11 +8,10 @@ import com.google.gson.reflect.TypeToken
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import kt.json.server.helpers.*
+import kt.json.server.helpers.GsonUtils
 import org.bson.Document
 import org.junit.FixMethodOrder
 import org.junit.runners.MethodSorters
-import org.litote.kmongo.json
 import java.lang.reflect.Type
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -33,7 +32,7 @@ class AppTest {
 
     private fun createComment(application: Application): Comment? {
         val className = "kt.json.server.Comment"
-        val body = "{'body':'Testing body', 'author':'Bob'}"
+        val body = "{'body':'Testing Comment', 'author':'Bob'}"
         val json = application.populateTestStorage(className, body)
         val obj = Class.forName(className).getDeclaredConstructor().newInstance()
         return GsonUtils.gson.fromJson(json, obj::class.java) as Comment
@@ -41,7 +40,7 @@ class AppTest {
 
     private fun createPost(application: Application): Post? {
         val className = "kt.json.server.Post"
-        val body = "{'title':'Testing body', 'author':'Bob'}"
+        val body = "{'title':'Testing Post', 'author':'Bob'}"
         val json = application.populateTestStorage(className, body)
         val obj = Class.forName(className).getDeclaredConstructor().newInstance()
         return GsonUtils.gson.fromJson(json, obj::class.java) as Post
@@ -57,7 +56,7 @@ class AppTest {
     fun testPostRequests() = withTestApplication(Application::main) {
         with(handleRequest(HttpMethod.Post, "/comment") {
             // Add headers/body
-            setBody("{'body':'Testing body', 'author':'Bob'}")
+            setBody("{'body':'Testing post Post', 'author':'Bob'}")
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertNotNull(response.content)
@@ -94,16 +93,6 @@ class AppTest {
 
     @Test
     fun testDeleteRequests() = withTestApplication(Application::main) {
-        with(handleRequest(HttpMethod.Post, "/comment") {
-            // Add headers/body
-            setBody("{'body':'Testing body', 'author':'Bob'}")
-        }) {
-            assertEquals(HttpStatusCode.OK, response.status())
-            assertNotNull(response.content)
-        }
-        with(handleRequest(HttpMethod.Delete, "/post")) {
-            assertEquals(HttpStatusCode.OK, response.status())
-        }
         with(handleRequest(HttpMethod.Delete, "/comment/${testComment?._id}")) {
             assertEquals(HttpStatusCode.OK, response.status())
         }

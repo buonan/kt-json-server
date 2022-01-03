@@ -3,8 +3,6 @@ package kt.json.server
 import java.nio.ByteBuffer
 import java.util.*
 
-import kt.json.server.Services.IService
-
 class Operator(val operation: String, val value: String)
 
 object Helpers {
@@ -29,10 +27,6 @@ object Helpers {
     fun longUUID(): String? {
         val uuid = UUID.randomUUID()
         return uuid.toString().replace("-", "")
-    }
-
-    fun GetClassServiceHandler(typeName: String): IService {
-      return Class.forName("kt.json.server.Services.${typeName}").getDeclaredConstructor().newInstance() as IService
     }
 }
 

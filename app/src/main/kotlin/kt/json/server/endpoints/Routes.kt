@@ -9,7 +9,6 @@ import org.reflections.*
 import org.reflections.scanners.*
 import org.reflections.util.*
 import java.util.*
-import kt.json.server.Services.IService
 
 fun Route.public() {
     val reflections =
@@ -27,22 +26,7 @@ fun Route.public() {
         get("/$route") {
             try {
                 if (call.request.queryParameters.isEmpty()) {
-                    // kt.json.server.Users -> kt.json.server.Services.User
-                    var useService = true
-                    var typeName = className.split('.').last()
-                    try {
-                        var obj = Class.forName("kt.json.server.Services.${typeName}").getDeclaredConstructor()
-                            .newInstance() as IService
-                        var json = obj.Get(className)
-                        json?.let {
-                            this.call.respondText(it, ContentType.Application.Json)
-                        }
-                    } catch (e: Exception) {
-                        useService = false
-                    }
-                    if (!useService) {
-                        handleGet(this, className)
-                    }
+                    handleGet(this, className)
                 } else {
                     handleGetWithQueryString(this, call.request.queryString(), className)
                 }
