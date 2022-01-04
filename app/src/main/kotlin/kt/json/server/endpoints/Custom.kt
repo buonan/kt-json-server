@@ -42,10 +42,8 @@ fun Route.custom() {
         var body = call.receiveText()
         var doc: Document = Document.parse(body)
         var email = doc.get("email")
-        var loginToken = doc.get("loginToken")
         var userJson = EndpointAdapter.GetWithQueryString(userClassName, "email=${email}")
         if (userJson != null) {
-            val loginToken = Helpers.longUUID()
             val collectionType: Type = object : TypeToken<List<User?>?>() {}.getType()
             val userArrayObj: List<User> = GsonUtils.gson
                 .fromJson(userJson, collectionType) as List<User>

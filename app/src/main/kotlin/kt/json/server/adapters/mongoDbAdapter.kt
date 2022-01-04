@@ -54,9 +54,8 @@ object MongoDbDataAdapter : IDataAdapter {
         mapSearchTerms: HashMap<String, Operator>
     ): MutableList<Any>? {
         val coll = db?.getCollection(className)
-        var found: MutableList<Document>? = ArrayList<Document>()
-        // Do want to do this here?
-        var dynList = coll?.find()?.toMutableList<Document>()
+        var found: MutableList<Document>? = ArrayList()
+        var dynList: MutableList<Document>?
         loop@ for ((sKey, sOpValue) in mapSearchTerms) {
             when (sKey) {
                 //GET /posts?_sort=views&_order=asc
@@ -77,6 +76,7 @@ object MongoDbDataAdapter : IDataAdapter {
                         }
                     }
                     var obj = Class.forName(className).getDeclaredConstructor().newInstance()
+                    dynList = coll?.find()?.toMutableList<Document>()
                     for (prop in obj.javaClass.kotlin.memberProperties) {
                         if (prop.name == field) {
                             when (sortOrder) {
@@ -110,6 +110,7 @@ object MongoDbDataAdapter : IDataAdapter {
                             }
                         }
                     }
+                    dynList = coll?.find()?.toMutableList<Document>()
                     if (dynList != null) {
                         if ((page - 1) > dynList.size || ((page - 1) * itemsPerPage) > dynList.size) {
                             found = null
